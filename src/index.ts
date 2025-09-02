@@ -5,6 +5,7 @@ import authRoutes from './routes/auth';
 import evaluationRoutes from './routes/evaluation';
 import imageRoutes from './routes/images';
 import patientRoutes from './routes/patient';
+import dentistRoutes from './routes/dentist';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ mongoose.connect(mongoUri)
   .catch((err) => console.error('Erro ao conectar MongoDB:', err));
 
 // Rotas
+app.use('/dentists', dentistRoutes);
 app.use('/auth', authRoutes);
 app.use('/evaluations', evaluationRoutes);
 app.use('/images', imageRoutes);

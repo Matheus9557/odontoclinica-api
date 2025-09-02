@@ -10,7 +10,10 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   const [, token] = authHeader.split(' ');
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    req.user = decoded;
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+    };
     next();
   } catch {
     return res.status(401).json({ error: 'Token inválido' });

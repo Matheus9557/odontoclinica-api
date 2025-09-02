@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
-import ImageModel from '../models/Image';
+import ImageModel from '../models/mongo/Image';
 
+// Upload de imagem
 export const uploadImage = async (req: Request, res: Response) => {
   try {
-    const { patientId } = req.params;
+    const { patientId, evaluationId } = req.params;
     const file = req.file;
 
     if (!file) return res.status(400).json({ error: 'Arquivo não enviado.' });
 
     const saved = await ImageModel.create({
       patientId,
-      evaluationId: req.body.evaluationId,
+      evaluationId,
       filename: file.filename,
       path: file.path,
     });
@@ -21,6 +22,18 @@ export const uploadImage = async (req: Request, res: Response) => {
   }
 };
 
+// Listar imagens de uma avaliação
+export const getImagesByEvaluation = async (req: Request, res: Response) => {
+  try {
+    const { evaluationId } = req.params;
+    const images = await ImageModel.find({ evaluationId }).sort({ uploadedAt: -1 });
+    res.json(images);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar imagens.' });
+  }
+};
+
+// Listar imagens de um paciente
 export const getImagesByPatient = async (req: Request, res: Response) => {
   try {
     const { patientId } = req.params;

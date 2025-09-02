@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, onlyDentist } from '../middlewares/authMiddleware';
 
@@ -6,17 +6,13 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // Dentista vê todos seus pacientes
-router.get('/', authenticate, onlyDentist, async (req, res) => {
+router.get('/', authenticate, onlyDentist, async (req: Request, res: Response) => {
   try {
-    const dentistId = req.user!.id;
+    const dentistId = req.user!.id; // Tipagem garantida pelo middleware
 
     const patients = await prisma.patient.findMany({
       where: { dentistId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      select: { id: true, name: true, email: true },
     });
 
     res.json(patients);
