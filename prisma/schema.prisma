@@ -12,8 +12,11 @@ model Dentist {
   name     String
   email    String   @unique
   password String
+  cro      String?   // aqui fica opcional
   patients Patient[]
 }
+
+
 
 model Patient {
   id         String      @id @default(cuid())

@@ -1,14 +1,11 @@
-import 'express';
-import { Multer } from 'multer';
+import 'express-serve-static-core';
 
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Multer.File;
-      user?: {
-        id: string;
-        role: 'dentist' | 'patient';
-      };
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string;
+      role: 'dentist' | 'patient';
+    };
+    file?: Express.Multer.File;
   }
 }

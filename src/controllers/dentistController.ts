@@ -4,24 +4,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-// Criar dentista (ex: cadastro inicial)
-export const createDentist = async (req: Request, res: Response) => {
-  try {
-    const { name, email, password } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const dentist = await prisma.dentist.create({
-      data: { name, email, password: hashedPassword },
-    });
-
-    res.json(dentist);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar dentista.' });
-  }
-};
-
-// Buscar dentista logado
+// Buscar perfil do dentista logado
 export const getDentistProfile = async (req: Request, res: Response) => {
   try {
     const dentistId = req.user!.id;
@@ -32,6 +15,7 @@ export const getDentistProfile = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
+        cro: true,
         patients: {
           select: { id: true, name: true, email: true },
         },
@@ -43,5 +27,41 @@ export const getDentistProfile = async (req: Request, res: Response) => {
     res.json(dentist);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar perfil do dentista.' });
+  }
+};
+
+// Atualizar dentista logado
+export const updateDentist = async (req: Request, res: Response) => {
+  try {
+    const dentistId = req.user!.id;
+    const { name, email, password, cro } = req.body;
+
+    const data: any = { name, email, cro };
+    if (password) data.password = await bcrypt.hash(password, 10);
+
+    const updated = await prisma.dentist.update({
+      where: { id: dentistId },
+      data,
+    });
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar dentista.' });
+  }
+};
+
+// Excluir dentista logado + pacientes vinculados
+export const deleteDentist = async (req: Request, res: Response) => {
+  try {
+    const dentistId = req.user!.id;
+
+    // Apagar pacientes vinculados primeiro
+    await prisma.patient.deleteMany({ where: { dentistId } });
+
+    await prisma.dentist.delete({ where: { id: dentistId } });
+
+    res.json({ message: 'Dentista e pacientes associados excluídos.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao excluir dentista.' });
   }
 };
