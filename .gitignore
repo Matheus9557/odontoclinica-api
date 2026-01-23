@@ -1,0 +1,21 @@
+# Dependências
+node_modules
+
+# Arquivos de ambiente
+.env
+
+# Uploads locais
+src/uploads
+
+# Build
+dist
+build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prisma
+prisma/dev.db
+

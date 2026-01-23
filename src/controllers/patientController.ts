@@ -9,20 +9,29 @@ export const createPatient = async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "Nome, email e senha são obrigatórios." });
+      return res.status(400).json({
+        error: "Nome, email e senha são obrigatórios.",
+      });
     }
 
     // Checar e-mail duplicado
     const exists = await prisma.patient.findUnique({ where: { email } });
     if (exists) {
-      return res.status(409).json({ error: "Paciente com este e-mail já existe." });
+      return res.status(409).json({
+        error: "Paciente com este e-mail já existe.",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const patient = await prisma.patient.create({
       data: { name, email, password: hashedPassword, dentistId },
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true, // 🟢
+      },
     });
 
     return res.status(201).json(patient);
@@ -38,7 +47,12 @@ export const getPatientsByDentist = async (req: Request, res: Response) => {
 
     const patients = await prisma.patient.findMany({
       where: { dentistId },
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true, // 🟢
+      },
     });
 
     return res.json(patients);
@@ -54,7 +68,9 @@ export const updatePatient = async (req: Request, res: Response) => {
     const patientId = req.params.id;
     const { name, email, password } = req.body;
 
-    const patient = await prisma.patient.findUnique({ where: { id: patientId } });
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientId },
+    });
 
     if (!patient || patient.dentistId !== dentistId) {
       return res.status(403).json({ error: "Acesso negado." });
@@ -64,11 +80,17 @@ export const updatePatient = async (req: Request, res: Response) => {
     if (name) data.name = name;
     if (email) data.email = email;
     if (password) data.password = await bcrypt.hash(password, 10);
+    // avatar só muda pela rota de upload
 
     const updated = await prisma.patient.update({
       where: { id: patientId },
       data,
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true, // 🟢
+      },
     });
 
     return res.json(updated);
@@ -83,7 +105,10 @@ export const deletePatient = async (req: Request, res: Response) => {
     const dentistId = req.user!.id;
     const patientId = req.params.id;
 
-    const patient = await prisma.patient.findUnique({ where: { id: patientId } });
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientId },
+    });
+
     if (!patient || patient.dentistId !== dentistId) {
       return res.status(403).json({ error: "Acesso negado." });
     }
@@ -97,7 +122,7 @@ export const deletePatient = async (req: Request, res: Response) => {
   }
 };
 
-// Retorna o paciente logado (usado para mensagens)
+// Retorna o paciente logado
 export const getMe = async (req: Request, res: Response) => {
   try {
     const patientId = req.user!.id;
@@ -107,6 +132,7 @@ export const getMe = async (req: Request, res: Response) => {
       select: {
         id: true,
         dentistId: true,
+        avatar: true, // 🟢
       },
     });
 

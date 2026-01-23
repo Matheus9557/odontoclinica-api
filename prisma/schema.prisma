@@ -13,9 +13,10 @@ model Dentist {
   email            String           @unique
   password         String
   cro              String?
-  patients         Patient[]
+  avatar           String?
   messages         Message[]        @relation("DentistMessages")
   painScaleEntries PainScaleEntry[]
+  patients         Patient[]
 }
 
 model Patient {
@@ -24,37 +25,34 @@ model Patient {
   email            String           @unique
   password         String
   dentistId        String
-  dentist          Dentist          @relation(fields: [dentistId], references: [id])
+  avatar           String?
   evaluations      Evaluation[]
   messages         Message[]        @relation("PatientMessages")
   painScaleEntries PainScaleEntry[]
+  dentist          Dentist          @relation(fields: [dentistId], references: [id])
 }
 
 model Evaluation {
   id               String           @id @default(cuid())
   patientId        String
-  patient          Patient          @relation(fields: [patientId], references: [id])
   startDate        DateTime
   endDate          DateTime
+  patient          Patient          @relation(fields: [patientId], references: [id])
   painScaleEntries PainScaleEntry[]
 }
 
 model PainScaleEntry {
-  id String @id @default(cuid())
-
-  scale    Int // escala de dor (1–10)
-  comments String?
-  imageUrl String?
-
-  date DateTime @default(now())
-
-  patientId String
-  dentistId String
-
-  patient      Patient     @relation(fields: [patientId], references: [id])
+  id           String      @id @default(cuid())
+  evaluationId String?
+  scale        Int
+  date         DateTime    @default(now())
+  comments     String?
+  dentistId    String
+  imageUrl     String?
+  patientId    String
   dentist      Dentist     @relation(fields: [dentistId], references: [id])
   evaluation   Evaluation? @relation(fields: [evaluationId], references: [id])
-  evaluationId String?
+  patient      Patient     @relation(fields: [patientId], references: [id])
 
   @@index([patientId, date])
 }
@@ -62,15 +60,13 @@ model PainScaleEntry {
 model Message {
   id         String   @id @default(cuid())
   content    String
-  senderType String // "dentist" | "patient"
+  senderType String
   createdAt  DateTime @default(now())
   expiresAt  DateTime
-
-  dentistId String
-  patientId String
-
-  dentist Dentist @relation("DentistMessages", fields: [dentistId], references: [id])
-  patient Patient @relation("PatientMessages", fields: [patientId], references: [id])
+  dentistId  String
+  patientId  String
+  dentist    Dentist  @relation("DentistMessages", fields: [dentistId], references: [id])
+  patient    Patient  @relation("PatientMessages", fields: [patientId], references: [id])
 
   @@index([expiresAt])
 }
@@ -78,7 +74,7 @@ model Message {
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  type      String // "message"
+  type      String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 

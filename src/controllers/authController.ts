@@ -30,7 +30,13 @@ export const signupDentist = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "Dentista cadastrado com sucesso!",
-      user: { id: user.id, name: user.name, email: user.email, cro: user.cro },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        cro: user.cro,
+        avatar: user.avatar ?? null,
+      },
     });
   } catch (err) {
     return res.status(500).json({ error: "Erro ao cadastrar dentista" });
@@ -61,7 +67,13 @@ export const signupPatient = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "Paciente cadastrado com sucesso!",
-      user: { id: user.id, name: user.name, email: user.email, dentistId },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        dentistId,
+        avatar: user.avatar ?? null,
+      },
     });
   } catch (err) {
     return res.status(500).json({ error: "Erro ao cadastrar paciente" });
@@ -97,9 +109,61 @@ export const login = async (req: Request, res: Response) => {
     return res.json({
       token,
       role,
-      user: { id: user.id, name: user.name, email: user.email, role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role,
+        avatar: user.avatar ?? null, // 🟢 AQUI
+      },
     });
   } catch (err) {
     return res.status(500).json({ error: "Erro no login" });
+  }
+};
+
+/* ---------------------- ME (USUÁRIO LOGADO) ---------------------- */
+export const me = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    const { id, role } = req.user;
+
+    let user;
+
+    if (role === "dentist") {
+      user = await prisma.dentist.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          cro: true,
+          avatar: true,
+        },
+      });
+    } else {
+      user = await prisma.patient.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          dentistId: true,
+          avatar: true,
+        },
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    return res.json({ ...user, role });
+  } catch (error) {
+    console.error("me error:", error);
+    return res.status(500).json({ error: "Erro ao buscar usuário" });
   }
 };

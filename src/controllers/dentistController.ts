@@ -13,6 +13,7 @@ export const getDentistProfile = async (req: Request, res: Response) => {
         name: true,
         email: true,
         cro: true,
+        avatar: true, // 🟢
         patients: {
           select: { id: true, name: true, email: true },
         },
@@ -34,7 +35,10 @@ export const updateDentist = async (req: Request, res: Response) => {
     const dentistId = req.user!.id;
     const { name, email, password, cro } = req.body;
 
-    const existing = await prisma.dentist.findUnique({ where: { id: dentistId } });
+    const existing = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
     if (!existing) {
       return res.status(404).json({ error: "Dentista não encontrado." });
     }
@@ -43,6 +47,7 @@ export const updateDentist = async (req: Request, res: Response) => {
       name: name ?? existing.name,
       email: email ?? existing.email,
       cro: cro ?? existing.cro,
+      // avatar NÃO é alterado aqui (só pela rota de upload)
     };
 
     if (password) {
@@ -52,7 +57,13 @@ export const updateDentist = async (req: Request, res: Response) => {
     const updated = await prisma.dentist.update({
       where: { id: dentistId },
       data,
-      select: { id: true, name: true, email: true, cro: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        cro: true,
+        avatar: true, // 🟢
+      },
     });
 
     return res.json(updated);
@@ -65,7 +76,10 @@ export const deleteDentist = async (req: Request, res: Response) => {
   try {
     const dentistId = req.user!.id;
 
-    const existing = await prisma.dentist.findUnique({ where: { id: dentistId } });
+    const existing = await prisma.dentist.findUnique({
+      where: { id: dentistId },
+    });
+
     if (!existing) {
       return res.status(404).json({ error: "Dentista não encontrado." });
     }
@@ -73,7 +87,9 @@ export const deleteDentist = async (req: Request, res: Response) => {
     await prisma.patient.deleteMany({ where: { dentistId } });
     await prisma.dentist.delete({ where: { id: dentistId } });
 
-    return res.json({ message: "Dentista e pacientes associados foram excluídos." });
+    return res.json({
+      message: "Dentista e pacientes associados foram excluídos.",
+    });
   } catch (error) {
     return res.status(500).json({ error: "Erro ao excluir dentista." });
   }

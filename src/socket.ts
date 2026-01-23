@@ -1,9 +1,8 @@
-import { Server as HttpServer } from "http";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 
 let io: Server;
 
-export function initSocket(server: HttpServer) {
+export function initSocket(server: any) {
   io = new Server(server, {
     cors: {
       origin: "http://localhost:5173",
@@ -11,27 +10,26 @@ export function initSocket(server: HttpServer) {
     },
   });
 
-  io.on("connection", (socket: Socket) => {
-    console.log("🟢 Socket conectado:", socket.id);
+  io.on("connection", (socket) => {
+    console.log("🟢 Usuário conectado:", socket.id);
 
+    // registra usuário na sala com seu userId
     socket.on("register_user", (userId: string) => {
-      socket.join(`user:${userId}`);
-      console.log("👤 Usuário registrado no room:", userId);
+      socket.join(userId);
+      console.log(`🔔 Usuário ${userId} registrado para notificações`);
     });
 
     socket.on("disconnect", () => {
-      console.log("🔴 Socket desconectado:", socket.id);
+      console.log("🔴 Usuário desconectado:", socket.id);
     });
   });
 
   return io;
 }
 
-// 🔔 FUNÇÃO ÚNICA DE NOTIFICAÇÃO (PADRÃO DEFINITIVO)
-export function notifyUser(userId: string, payload?: any) {
+// 🔔 função usada nos controllers
+export function notifyUser(userId: string, payload: any) {
   if (!io) return;
 
-  console.log("🔔 Enviando notificação para:", userId);
-
-  io.to(`user:${userId}`).emit("notification:new_message", payload);
+  io.to(userId).emit("notification:new_message", payload);
 }
