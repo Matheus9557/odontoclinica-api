@@ -2,7 +2,6 @@
 
 import express from "express";
 import dotenv from "dotenv";
-// import mongoose from "mongoose";
 import cors from "cors";
 import path from "path";
 import http from "http";
@@ -23,16 +22,6 @@ import notificationRoutes from "./routes/notification";
 dotenv.config();
 
 const app = express();
-
-/* =======================
-   ENV
-======================= */
-
-//const mongoUri = process.env.MONGO_URI;
-//if (!mongoUri) {
-//  console.error("❌ ERRO: MONGO_URI está ausente no .env");
-//  process.exit(1);
-//}
 
 /* =======================
    MIDDLEWARES
@@ -61,6 +50,7 @@ app.use("/upload", uploadRoutes);
 app.use("/messages", messageRoutes);
 app.use("/pain-scale", painScaleRoutes);
 app.use("/notifications", notificationRoutes);
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =======================
@@ -69,10 +59,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const server = http.createServer(app);
 
-// 🔌 Inicializa Socket.IO
+// Socket.IO
 const io = initSocket(server);
 
-// Disponibiliza io para controllers
+// Disponibiliza io globalmente
 app.set("io", io);
 
 /* =======================
