@@ -2,7 +2,7 @@
 
 import express from "express";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 import cors from "cors";
 import path from "path";
 import http from "http";
@@ -28,11 +28,11 @@ const app = express();
    ENV
 ======================= */
 
-const mongoUri = process.env.MONGO_URI;
-if (!mongoUri) {
-  console.error("❌ ERRO: MONGO_URI está ausente no .env");
-  process.exit(1);
-}
+//const mongoUri = process.env.MONGO_URI;
+//if (!mongoUri) {
+//  console.error("❌ ERRO: MONGO_URI está ausente no .env");
+//  process.exit(1);
+//}
 
 /* =======================
    MIDDLEWARES
@@ -40,9 +40,9 @@ if (!mongoUri) {
 
 app.use(
   cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-})
+    origin: process.env.FRONTEND_URL || "*",
+    credentials: true,
+  })
 );
 
 app.use(express.json());
@@ -81,21 +81,14 @@ app.set("io", io);
 
 async function startServer() {
   try {
-    console.log("⏳ Conectando ao MongoDB...");
-
-    await mongoose.connect(mongoUri!); // ✅ FIX TS ERROR
-
-    console.log("✅ MongoDB conectado com sucesso!");
-
-    mongoose.connection.on("error", (err) => {
-      console.error("❌ Erro de conexão no MongoDB:", err);
-    });
+    console.log("⏳ Iniciando servidor...");
 
     const PORT = process.env.PORT ?? "3000";
 
     server.listen(Number(PORT), () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
     });
+
   } catch (err) {
     console.error("❌ Falha ao iniciar servidor:", err);
     process.exit(1);
