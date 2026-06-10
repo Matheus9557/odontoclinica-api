@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: oralsync-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oralsync
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo:8
+    container_name: oralsync-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+
+volumes:
+  postgres_data:
+  mongo_data:

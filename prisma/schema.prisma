@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dentist {
+  id               String           @id @default(cuid())
+  name             String
+  email            String           @unique
+  password         String
+  cro              String?
+  avatar           String?
+  messages         Message[]        @relation("DentistMessages")
+  painScaleEntries PainScaleEntry[]
+  patients         Patient[]
+}
+
+model Patient {
+  id               String           @id @default(cuid())
+  name             String
+  email            String           @unique
+  password         String
+  dentistId        String
+  avatar           String?
+  evaluations      Evaluation[]
+  messages         Message[]        @relation("PatientMessages")
+  painScaleEntries PainScaleEntry[]
+  dentist          Dentist          @relation(fields: [dentistId], references: [id])
+}
+
+model Evaluation {
+  id               String           @id @default(cuid())
+  patientId        String
+  startDate        DateTime
+  endDate          DateTime
+  patient          Patient          @relation(fields: [patientId], references: [id])
+  painScaleEntries PainScaleEntry[]
+}
+
+model PainScaleEntry {
+  id           String      @id @default(cuid())
+  evaluationId String?
+  scale        Int
+  date         DateTime    @default(now())
+  comments     String?
+  dentistId    String
+  imageUrl     String?
+  patientId    String
+  dentist      Dentist     @relation(fields: [dentistId], references: [id])
+  evaluation   Evaluation? @relation(fields: [evaluationId], references: [id])
+  patient      Patient     @relation(fields: [patientId], references: [id])
+
+  @@index([patientId, date])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  senderType String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  dentistId  String
+  patientId  String
+  dentist    Dentist  @relation("DentistMessages", fields: [dentistId], references: [id])
+  patient    Patient  @relation("PatientMessages", fields: [patientId], references: [id])
+
+  @@index([expiresAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
