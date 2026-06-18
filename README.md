@@ -88,3 +88,52 @@ Use cases include:
 - Improved user experience in interactive systems
 
 ## 📦 Project Structure
+
+src/
+├── controllers/ # HTTP request handlers (business entry point per feature)
+│ ├── authController.ts
+│ ├── dentistController.ts
+│ ├── evaluationController.ts
+│ ├── imageController.ts
+│ ├── messageController.ts
+│ ├── notificationController.ts
+│ ├── painScaleController.ts
+│ ├── patientController.ts
+│ └── uploadController.ts
+│
+├── routes/ # API route definitions (REST endpoints mapping)
+│ ├── auth.ts
+│ ├── dentist.ts
+│ ├── evaluation.ts
+│ ├── images.ts
+│ ├── messages.ts
+│ ├── notification.ts
+│ ├── painScale.ts
+│ ├── patient.ts
+│ └── upload.ts
+│
+├── middlewares/ # Authentication & request processing
+│ └── authMiddleware.ts
+│
+├── socket.ts # Socket.IO real-time communication layer
+│
+├── cron/ # Scheduled background jobs (maintenance tasks)
+│ └── cleanup.ts
+│
+├── lib/ # External service configuration
+│ └── prisma.ts
+│
+├── models/ # Data models (MongoDB schemas)
+│ └── mongo/
+│ └── Image.ts
+│
+├── utils/ # Utility functions (helpers, shared logic)
+│ └── multer.ts
+│
+├── @types/ # TypeScript type extensions
+│ └── express/
+│ └── index.d.ts
+│
+├── uploads/ # File storage directory
+│
+└── index.ts # Application entry point
