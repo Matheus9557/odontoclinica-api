@@ -33,6 +33,7 @@ This structure improves maintainability, testability, and scalability.
 ## ⚙️ Features
 
 - RESTful API development
+- Real-time communication using Socket.IO
 - Structured layered architecture (Controller / Service / Repository)
 - Business logic separation
 - Input validation and request handling
@@ -49,6 +50,7 @@ This structure improves maintainability, testability, and scalability.
 - Separation of concerns
 - Scalable backend architecture
 - API-first design
+- Real-time communication (WebSockets via Socket.IO)
 - Modular project structure
 
 ---
@@ -73,5 +75,16 @@ The system is designed with relational database principles in mind:
 - Error handling strategy
 
 ---
+
+## 📡 Real-Time Communication
+
+This project includes real-time communication features using Socket.IO, enabling bidirectional event-based communication between client and server.
+
+Use cases include:
+
+- Real-time updates
+- Event-driven communication
+- Live data synchronization
+- Improved user experience in interactive systems
 
 ## 📦 Project Structure
