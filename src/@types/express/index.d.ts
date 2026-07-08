@@ -1,11 +1,12 @@
-import 'express-serve-static-core';
+import "express-serve-static-core";
 
-declare module 'express-serve-static-core' {
+declare module "express-serve-static-core" {
   interface Request {
     user?: {
       id: string;
-      role: 'dentist' | 'patient';
+      role: "dentist" | "patient";
     };
+
     file?: Express.Multer.File;
   }
 }

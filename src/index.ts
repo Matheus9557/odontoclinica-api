@@ -1,3 +1,5 @@
+/// <reference path="./@types/express/index.d.ts" /> 
+
 import http from "http";
 
 import app from "./app";
