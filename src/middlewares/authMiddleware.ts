@@ -3,14 +3,6 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'segredo123';
 
-// Extensão do Request para adicionar req.user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string; role: 'dentist' | 'patient' };
-    }
-  }
-}
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
