@@ -181,9 +181,6 @@ Cobertura atual:
 - Service unit tests
 
 
-Executar testes:
-
-```bash
 npm test
 
 
