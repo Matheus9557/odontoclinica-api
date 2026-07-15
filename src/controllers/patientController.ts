@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 
 // Criar paciente vinculado ao dentista logado
 export const createPatient = async (req: Request, res: Response) => {
@@ -14,8 +15,10 @@ export const createPatient = async (req: Request, res: Response) => {
       });
     }
 
-    // Checar e-mail duplicado
-    const exists = await prisma.patient.findUnique({ where: { email } });
+    const exists = await prisma.patient.findUnique({
+      where: { email },
+    });
+
     if (exists) {
       return res.status(409).json({
         error: "Paciente com este e-mail já existe.",
@@ -25,124 +28,220 @@ export const createPatient = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const patient = await prisma.patient.create({
-      data: { name, email, password: hashedPassword, dentistId },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        dentistId,
+      },
       select: {
         id: true,
         name: true,
         email: true,
-        avatar: true, // 🟢
+        avatar: true,
       },
     });
 
     return res.status(201).json(patient);
+
   } catch (error) {
     console.error("createPatient error:", error);
-    return res.status(500).json({ error: "Erro ao criar paciente." });
+
+    return res.status(500).json({
+      error: "Erro ao criar paciente.",
+    });
   }
 };
 
-export const getPatientsByDentist = async (req: Request, res: Response) => {
+
+export const getPatientsByDentist = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const dentistId = req.user!.id;
 
     const patients = await prisma.patient.findMany({
-      where: { dentistId },
+      where: {
+        dentistId,
+      },
       select: {
         id: true,
         name: true,
         email: true,
-        avatar: true, // 🟢
+        avatar: true,
       },
     });
 
     return res.json(patients);
+
   } catch (error) {
     console.error("getPatientsByDentist error:", error);
-    return res.status(500).json({ error: "Erro ao buscar pacientes." });
+
+    return res.status(500).json({
+      error: "Erro ao buscar pacientes.",
+    });
   }
 };
 
-export const updatePatient = async (req: Request, res: Response) => {
+
+export const updatePatient = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const dentistId = req.user!.id;
     const patientId = req.params.id;
-    const { name, email, password } = req.body;
+
+    const {
+      name,
+      email,
+      password,
+    } = req.body;
+
 
     const patient = await prisma.patient.findUnique({
-      where: { id: patientId },
+      where: {
+        id: patientId,
+      },
     });
 
+
     if (!patient || patient.dentistId !== dentistId) {
-      return res.status(403).json({ error: "Acesso negado." });
+      return res.status(403).json({
+        error: "Acesso negado.",
+      });
     }
 
-    const data: any = {};
-    if (name) data.name = name;
-    if (email) data.email = email;
-    if (password) data.password = await bcrypt.hash(password, 10);
-    // avatar só muda pela rota de upload
+
+    const data: Prisma.PatientUpdateInput = {};
+
+
+    if (name) {
+      data.name = name;
+    }
+
+
+    if (email) {
+      data.email = email;
+    }
+
+
+    if (password) {
+      data.password = await bcrypt.hash(password, 10);
+    }
+
 
     const updated = await prisma.patient.update({
-      where: { id: patientId },
+      where: {
+        id: patientId,
+      },
       data,
       select: {
         id: true,
         name: true,
         email: true,
-        avatar: true, // 🟢
+        avatar: true,
       },
     });
 
+
     return res.json(updated);
+
+
   } catch (error) {
     console.error("updatePatient error:", error);
-    return res.status(500).json({ error: "Erro ao atualizar paciente." });
+
+    return res.status(500).json({
+      error: "Erro ao atualizar paciente.",
+    });
   }
 };
 
-export const deletePatient = async (req: Request, res: Response) => {
+
+export const deletePatient = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const dentistId = req.user!.id;
     const patientId = req.params.id;
 
-    const patient = await prisma.patient.findUnique({
-      where: { id: patientId },
-    });
-
-    if (!patient || patient.dentistId !== dentistId) {
-      return res.status(403).json({ error: "Acesso negado." });
-    }
-
-    await prisma.patient.delete({ where: { id: patientId } });
-
-    return res.json({ message: "Paciente excluído com sucesso." });
-  } catch (error) {
-    console.error("deletePatient error:", error);
-    return res.status(500).json({ error: "Erro ao excluir paciente." });
-  }
-};
-
-// Retorna o paciente logado
-export const getMe = async (req: Request, res: Response) => {
-  try {
-    const patientId = req.user!.id;
 
     const patient = await prisma.patient.findUnique({
-      where: { id: patientId },
-      select: {
-        id: true,
-        dentistId: true,
-        avatar: true, // 🟢
+      where: {
+        id: patientId,
       },
     });
 
-    if (!patient) {
-      return res.status(404).json({ error: "Paciente não encontrado." });
+
+    if (!patient || patient.dentistId !== dentistId) {
+      return res.status(403).json({
+        error: "Acesso negado.",
+      });
     }
 
+
+    await prisma.patient.delete({
+      where: {
+        id: patientId,
+      },
+    });
+
+
+    return res.json({
+      message: "Paciente excluído com sucesso.",
+    });
+
+
+  } catch (error) {
+    console.error("deletePatient error:", error);
+
+    return res.status(500).json({
+      error: "Erro ao excluir paciente.",
+    });
+  }
+};
+
+
+// Retorna o paciente logado
+export const getMe = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const patientId = req.user!.id;
+
+
+    const patient = await prisma.patient.findUnique({
+      where: {
+        id: patientId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        dentistId: true,
+        avatar: true,
+      },
+    });
+
+
+    if (!patient) {
+      return res.status(404).json({
+        error: "Paciente não encontrado.",
+      });
+    }
+
+
     return res.json(patient);
+
+
   } catch (error) {
     console.error("getMe error:", error);
-    return res.status(500).json({ error: "Erro ao buscar paciente." });
+
+    return res.status(500).json({
+      error: "Erro ao buscar paciente.",
+    });
   }
 };

@@ -3,6 +3,7 @@ node_modules
 
 # Arquivos de ambiente
 .env
+.env.test
 
 # Uploads locais
 src/uploads
@@ -19,3 +20,8 @@ yarn-error.log*
 # Prisma
 prisma/dev.db
 
+# Coverage de testes
+coverage
+
+# Sistema operacional
+.DS_Store

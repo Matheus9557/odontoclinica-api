@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
+
 // Rotas
 import authRoutes from "./routes/auth";
 import dentistRoutes from "./routes/dentist";
@@ -30,6 +33,16 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/* =======================
+   SWAGGER DOCUMENTATION
+======================= */
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 /* =======================
    ROTAS

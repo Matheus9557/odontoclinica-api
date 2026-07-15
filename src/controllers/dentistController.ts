@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 
 export const getDentistProfile = async (req: Request, res: Response) => {
   try {
@@ -43,7 +44,7 @@ export const updateDentist = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Dentista não encontrado." });
     }
 
-    const data: any = {
+   const data: Prisma.DentistUpdateInput = {
       name: name ?? existing.name,
       email: email ?? existing.email,
       cro: cro ?? existing.cro,

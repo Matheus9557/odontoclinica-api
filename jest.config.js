@@ -6,29 +6,37 @@ const tsJestTransformCfg = createDefaultPreset().transform;
 module.exports = {
   testEnvironment: "node",
 
+  setupFilesAfterEnv: [
+    "<rootDir>/tests/setup.ts",
+  ],
+
   transform: {
     ...tsJestTransformCfg,
   },
 
-  roots: ["<rootDir>/tests"],
+  roots: [
+    "<rootDir>/tests",
+  ],
 
   testMatch: [
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
   ],
 
   moduleFileExtensions: [
     "ts",
     "js",
-    "json"
+    "json",
   ],
 
   collectCoverageFrom: [
     "src/**/*.ts",
-    "!src/index.ts"
+    "!src/index.ts",
   ],
 
   coverageDirectory: "coverage",
 
   clearMocks: true,
+
+maxWorkers: 1,
 };

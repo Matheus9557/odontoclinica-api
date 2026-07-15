@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { AuthRepository } from "../repositories/authRepository";
 import { isValidCro } from "../validators/croValidator";
 import { JWT_SECRET } from "../config/jwt";
+import { UserRole } from "../types/auth";
 
 export class AuthService {
   private repository = new AuthRepository();
@@ -105,10 +106,10 @@ export class AuthService {
 
 
   async login(
-    email: string,
-    password: string,
-    role: "dentist" | "patient"
-  ) {
+  email: string,
+  password: string,
+  role: UserRole
+) {
 
     if (
       role !== "dentist" &&
@@ -167,9 +168,9 @@ export class AuthService {
 
 
   async me(
-    id: string,
-    role: "dentist" | "patient"
-  ) {
+  id: string,
+  role: UserRole
+     ) {
 
     const user =
       role === "dentist"

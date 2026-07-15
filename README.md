@@ -1,139 +1,268 @@
-# OralSync API — Backend Platform
+# OdontoClínica API — Backend
 
-Backend REST API developed with Node.js, Express, and TypeScript, focused on building scalable, maintainable, and production-ready backend systems.
+Backend REST API desenvolvida para gerenciamento de acompanhamento odontológico, permitindo comunicação entre dentistas e pacientes, registro de avaliações clínicas, acompanhamento da escala de dor e gerenciamento de usuários.
 
-This project simulates a SaaS-oriented architecture with emphasis on clean code, layered design, and real-world backend engineering practices.
+O projeto simula uma plataforma SaaS odontológica com foco em arquitetura escalável, organização de código, testes automatizados e boas práticas de desenvolvimento backend.
 
 ---
 
-## 🚀 Tech Stack
+# 🚀 Tech Stack
+
+## Backend
 
 - Node.js
 - TypeScript
 - Express.js
-- REST API architecture
-- SQL (MySQL / PostgreSQL compatible design)
-- Git & GitHub
+- REST API
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- Socket.IO
+- Swagger / OpenAPI
+- Jest
+- Supertest
+- Docker
+
 
 ---
 
-## 📐 Architecture Overview
+# 📌 Funcionalidades
 
-The project follows a layered architecture pattern to ensure separation of concerns and scalability:
+## Autenticação
 
-- **Controllers** → Handle HTTP requests and responses
-- **Services** → Business logic layer
-- **Repositories** → Data access layer
-- **Models/Entities** → Domain representation
+- Cadastro de dentistas
+- Cadastro de pacientes
+- Login com JWT
+- Controle de acesso por perfil:
+  - Dentist
+  - Patient
 
-This structure improves maintainability, testability, and scalability.
+
+## Gestão de pacientes
+
+Dentistas podem:
+
+- Criar pacientes
+- Visualizar seus pacientes cadastrados
+- Atualizar dados dos pacientes
+- Remover pacientes
+
+Cada paciente pertence a apenas um dentista.
+
+
+## Avaliação odontológica
+
+Permite:
+
+- Criar acompanhamento odontológico
+- Definir período de acompanhamento
+- Consultar histórico de avaliações
+
+
+## Escala de dor
+
+Pacientes podem enviar diariamente:
+
+- Escala de dor (1-10)
+- Comentários
+- Imagens da região acompanhada
+
+
+Dentistas podem visualizar o histórico para acompanhamento da evolução clínica.
+
+
+## Comunicação em tempo real
+
+Implementado utilizando Socket.IO para:
+
+- Chat paciente ↔ dentista
+- Comunicação bidirecional
+- Eventos em tempo real
+
+
+## Notificações
+
+Sistema de notificações:
+
+- Contagem de mensagens/eventos não lidos
+- Marcação de notificações como lidas
+
+
+## Upload de arquivos
+
+Suporte para:
+
+- Upload de imagens clínicas
+- Upload de avatar dos usuários
 
 ---
 
-## ⚙️ Features
+# 📐 Arquitetura
 
-- RESTful API development
-- Real-time communication using Socket.IO
-- Structured layered architecture (Controller / Service / Repository)
-- Business logic separation
-- Input validation and request handling
-- Database integration (relational model)
-- Scalable project structure
-- Git version control workflow
+O projeto segue uma arquitetura organizada por responsabilidades:
 
----
+src
+├── controllers # Entrada HTTP e respostas da API
+├── routes # Definição dos endpoints
+├── services # Regras de negócio
+├── repositories # Camada de acesso aos dados
+├── middlewares # Autenticação e validações
+├── validators # Validações específicas
+├── config # Configurações da aplicação
+├── lib # Clientes externos (Prisma)
+├── utils # Funções auxiliares
+├── socket.ts # Comunicação Socket.IO
+└── index.ts # Inicialização da aplicação
 
-## 🧠 Key Engineering Concepts Applied
 
-- Clean Code principles
-- SOLID principles (basic application)
-- Separation of concerns
-- Scalable backend architecture
-- API-first design
-- Real-time communication (WebSockets via Socket.IO)
-- Modular project structure
+
 
 ---
 
-## 🗄️ Database Design
+# 🗄️ Banco de Dados
 
-The system is designed with relational database principles in mind:
+Utiliza PostgreSQL com Prisma ORM.
 
-- Structured schema design
-- Normalized entities
-- SQL-based persistence layer
-- Support for MySQL/PostgreSQL
+Principais entidades:
 
----
+- Dentist
+- Patient
+- Evaluation
+- PainScaleEntry
+- Message
+- Notification
 
-## 🔐 Backend Responsibilities
 
-- API request handling
-- Business rule implementation
-- Data validation
-- Database interaction layer
-- Error handling strategy
+As migrations são gerenciadas pelo Prisma.
+
 
 ---
 
-## 📡 Real-Time Communication
+# 🔐 Segurança
 
-This project includes real-time communication features using Socket.IO, enabling bidirectional event-based communication between client and server.
+Implementado:
 
-Use cases include:
+- JWT Authentication
+- Middleware de autenticação
+- Controle de permissões por papel
+- Proteção de rotas privadas
 
-- Real-time updates
-- Event-driven communication
-- Live data synchronization
-- Improved user experience in interactive systems
 
-## 📦 Project Structure
+Exemplo:
 
-src/
-├── controllers/ # HTTP request handlers (business entry point per feature)
-│ ├── authController.ts
-│ ├── dentistController.ts
-│ ├── evaluationController.ts
-│ ├── imageController.ts
-│ ├── messageController.ts
-│ ├── notificationController.ts
-│ ├── painScaleController.ts
-│ ├── patientController.ts
-│ └── uploadController.ts
-│
-├── routes/ # API route definitions (REST endpoints mapping)
-│ ├── auth.ts
-│ ├── dentist.ts
-│ ├── evaluation.ts
-│ ├── images.ts
-│ ├── messages.ts
-│ ├── notification.ts
-│ ├── painScale.ts
-│ ├── patient.ts
-│ └── upload.ts
-│
-├── middlewares/ # Authentication & request processing
-│ └── authMiddleware.ts
-│
-├── socket.ts # Socket.IO real-time communication layer
-│
-├── cron/ # Scheduled background jobs (maintenance tasks)
-│ └── cleanup.ts
-│
-├── lib/ # External service configuration
-│ └── prisma.ts
-│
-├── models/ # Data models (MongoDB schemas)
-│ └── mongo/
-│ └── Image.ts
-│
-├── utils/ # Utility functions (helpers, shared logic)
-│ └── multer.ts
-│
-├── @types/ # TypeScript type extensions
-│ └── express/
-│ └── index.d.ts
-│
-├── uploads/ # File storage directory
-│
-└── index.ts # Application entry point
+
+Dentist
+└── cria e acompanha pacientes
+
+Patient
+└── envia registros de evolução
+
+
+
+
+---
+
+# 🧪 Testes
+
+A aplicação possui testes automatizados utilizando:
+
+- Jest
+- Supertest
+
+
+Cobertura atual:
+
+- Auth integration tests
+- Dentist integration tests
+- Patient integration tests
+- Evaluation integration tests
+- Pain Scale integration tests
+- Middleware unit tests
+- Service unit tests
+
+
+Executar testes:
+
+```bash
+npm test
+
+
+📚 Documentação da API
+
+A API possui documentação Swagger/OpenAPI.
+
+Após iniciar o projeto: 
+
+npm run dev
+
+acesse:
+
+http://localhost:3000/api-docs
+
+
+🐳 Executando localmente
+
+Instalar dependências
+npm install
+Configurar ambiente
+
+Criar arquivo:
+
+.env
+
+com:
+
+DATABASE_URL=
+JWT_SECRET=
+FRONTEND_URL=
+
+Executar migrations
+npx prisma migrate dev
+Iniciar aplicação
+npm run dev
+
+
+📦 Scripts
+npm run dev     # Ambiente de desenvolvimento
+
+npm run build   # Build TypeScript
+
+npm test        # Executa testes
+
+
+📡 API Overview
+
+Principais recursos:
+
+/auth
+
+/dentists
+
+/patients
+
+/evaluations
+
+/pain-scale
+
+/messages
+
+/notifications
+
+/upload
+
+
+🧠 Conceitos aplicados
+
+Clean Code
+SOLID
+REST API Design
+Separation of Concerns
+Domain-driven organization
+API-first development
+Automated testing
+Event-driven communication
+Database modeling
+
+📄 License
+
+Projeto desenvolvido para fins acadêmicos e profissionais.
