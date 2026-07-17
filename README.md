@@ -1,8 +1,20 @@
-# OdontoClínica API — Backend
+# OdontoClínica API — Backend 🦷
 
-Backend REST API desenvolvida para gerenciamento de acompanhamento odontológico, permitindo comunicação entre dentistas e pacientes, registro de avaliações clínicas, acompanhamento da escala de dor e gerenciamento de usuários.
+Backend REST API desenvolvida para gerenciamento de acompanhamento odontológico, permitindo comunicação entre dentistas e pacientes, registro de avaliações clínicas, acompanhamento da escala de dor, gerenciamento de usuários, notificações e comunicação em tempo real.
 
-O projeto simula uma plataforma SaaS odontológica com foco em arquitetura escalável, organização de código, testes automatizados e boas práticas de desenvolvimento backend.
+O projeto simula uma plataforma SaaS odontológica com foco em arquitetura escalável, organização de código, testes automatizados, boas práticas backend e documentação de API.
+
+---
+
+# 🌐 Deploy
+
+API disponível em produção:
+
+🔗 https://odontoclinica-api.onrender.com
+
+Documentação Swagger/OpenAPI:
+
+🔗 https://odontoclinica-api.onrender.com/api-docs
 
 ---
 
@@ -28,29 +40,34 @@ O projeto simula uma plataforma SaaS odontológica com foco em arquitetura escal
 
 # 📌 Funcionalidades
 
-## Autenticação
+## 🔐 Autenticação
 
 - Cadastro de dentistas
 - Cadastro de pacientes
 - Login com JWT
 - Controle de acesso por perfil:
+
   - Dentist
   - Patient
 
 
-## Gestão de pacientes
+---
+
+## 👥 Gestão de pacientes
 
 Dentistas podem:
 
 - Criar pacientes
-- Visualizar seus pacientes cadastrados
+- Visualizar pacientes cadastrados
 - Atualizar dados dos pacientes
 - Remover pacientes
 
 Cada paciente pertence a apenas um dentista.
 
 
-## Avaliação odontológica
+---
+
+## 🦷 Avaliação odontológica
 
 Permite:
 
@@ -59,19 +76,22 @@ Permite:
 - Consultar histórico de avaliações
 
 
-## Escala de dor
+---
 
-Pacientes podem enviar diariamente:
+## 📈 Escala de dor
 
-- Escala de dor (1-10)
+Pacientes podem registrar diariamente:
+
+- Escala de dor
 - Comentários
 - Imagens da região acompanhada
-
 
 Dentistas podem visualizar o histórico para acompanhamento da evolução clínica.
 
 
-## Comunicação em tempo real
+---
+
+## 💬 Comunicação em tempo real
 
 Implementado utilizando Socket.IO para:
 
@@ -80,20 +100,27 @@ Implementado utilizando Socket.IO para:
 - Eventos em tempo real
 
 
-## Notificações
+---
+
+## 🔔 Notificações
 
 Sistema de notificações:
 
 - Contagem de mensagens/eventos não lidos
 - Marcação de notificações como lidas
+- Integração com comunicação entre usuários
 
 
-## Upload de arquivos
+---
+
+## 📁 Upload de arquivos
 
 Suporte para:
 
 - Upload de imagens clínicas
 - Upload de avatar dos usuários
+- Geração de URLs públicas para arquivos
+
 
 ---
 
@@ -101,20 +128,20 @@ Suporte para:
 
 O projeto segue uma arquitetura organizada por responsabilidades:
 
+```
 src
-├── controllers # Entrada HTTP e respostas da API
-├── routes # Definição dos endpoints
-├── services # Regras de negócio
-├── repositories # Camada de acesso aos dados
-├── middlewares # Autenticação e validações
-├── validators # Validações específicas
-├── config # Configurações da aplicação
-├── lib # Clientes externos (Prisma)
-├── utils # Funções auxiliares
-├── socket.ts # Comunicação Socket.IO
-└── index.ts # Inicialização da aplicação
-
-
+├── controllers        # Entrada HTTP e respostas da API
+├── routes             # Definição dos endpoints
+├── services           # Regras de negócio
+├── repositories       # Camada de acesso aos dados
+├── middlewares        # Autenticação e validações
+├── validators         # Validações específicas
+├── config             # Configurações da aplicação
+├── lib                # Clientes externos (Prisma)
+├── utils              # Funções auxiliares
+├── socket.ts          # Comunicação Socket.IO
+└── index.ts           # Inicialização da aplicação
+```
 
 
 ---
@@ -150,14 +177,13 @@ Implementado:
 
 Exemplo:
 
-
+```
 Dentist
-└── cria e acompanha pacientes
+ └── cria e acompanha pacientes
 
 Patient
-└── envia registros de evolução
-
-
+ └── envia registros de evolução
+```
 
 
 ---
@@ -170,96 +196,204 @@ A aplicação possui testes automatizados utilizando:
 - Supertest
 
 
-Cobertura atual:
+Testes implementados:
 
 - Auth integration tests
 - Dentist integration tests
 - Patient integration tests
 - Evaluation integration tests
 - Pain Scale integration tests
+- Message integration tests
+- Notification integration tests
+- Upload integration tests
 - Middleware unit tests
 - Service unit tests
 
 
+Executar testes:
+
+```bash
 npm test
+```
 
 
-📚 Documentação da API
+---
+
+# 📚 Documentação da API
 
 A API possui documentação Swagger/OpenAPI.
 
-Após iniciar o projeto: 
+Produção:
 
-npm run dev
+```
+https://odontoclinica-api.onrender.com/api-docs
+```
 
-acesse:
+Preview:
 
-http://localhost:3000/api-docs
+![Swagger API](docs/swagger.png)
 
 
-🐳 Executando localmente
+---
 
-Instalar dependências
+# 🐳 Executando localmente
+
+## Instalar dependências
+
+```bash
 npm install
-Configurar ambiente
+```
+
+
+## Configurar ambiente
 
 Criar arquivo:
 
+```
 .env
+```
 
 com:
 
+```
 DATABASE_URL=
 JWT_SECRET=
 FRONTEND_URL=
+API_URL=
+```
 
-Executar migrations
+
+## Executar migrations
+
+```bash
 npx prisma migrate dev
-Iniciar aplicação
+```
+
+
+## Iniciar aplicação
+
+```bash
 npm run dev
+```
 
 
-📦 Scripts
-npm run dev     # Ambiente de desenvolvimento
+---
 
-npm run build   # Build TypeScript
+# 📦 Scripts
 
-npm test        # Executa testes
+```bash
+npm run dev       # Ambiente de desenvolvimento
 
+npm run build     # Build TypeScript
 
-📡 API Overview
-
-Principais recursos:
-
-/auth
-
-/dentists
-
-/patients
-
-/evaluations
-
-/pain-scale
-
-/messages
-
-/notifications
-
-/upload
+npm test          # Executa testes automatizados
+```
 
 
-🧠 Conceitos aplicados
+---
 
-Clean Code
-SOLID
-REST API Design
-Separation of Concerns
-Domain-driven organization
-API-first development
-Automated testing
-Event-driven communication
-Database modeling
+# 📡 API Overview
 
-📄 License
+## Auth
+
+```
+POST /auth/signup/dentist
+
+POST /auth/signup/patient
+
+POST /auth/login
+```
+
+
+## Dentist
+
+```
+GET /dentists/me
+
+PUT /dentists/{id}
+
+DELETE /dentists/{id}
+```
+
+
+## Patient
+
+```
+GET /patients/me
+
+POST /patients
+
+GET /patients
+
+PUT /patients/{id}
+
+DELETE /patients/{id}
+```
+
+
+## Evaluation
+
+```
+POST /evaluations/{patientId}
+
+GET /evaluations/patient/{patientId}
+```
+
+
+## Pain Scale
+
+```
+POST /pain-scale
+
+GET /pain-scale/patient/{patientId}
+```
+
+
+## Messages
+
+```
+POST /messages/send
+
+GET /messages
+```
+
+
+## Notifications
+
+```
+GET /notifications/unread-count
+
+PATCH /notifications/read-all
+```
+
+
+## Upload
+
+```
+POST /upload
+
+POST /upload/avatar
+```
+
+
+---
+
+# 🧠 Conceitos aplicados
+
+- Clean Code
+- SOLID
+- Separation of Concerns
+- Domain-oriented architecture
+- REST API Design
+- API-first development
+- Automated testing
+- Event-driven communication
+- Database modeling
+- Layered architecture
+
+
+---
+
+# 📄 License
 
 Projeto desenvolvido para fins acadêmicos e profissionais.
