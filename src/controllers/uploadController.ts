@@ -1,51 +1,122 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { UploadService } from "../services/uploadService";
 
-// Upload genérico (DailyForm, imagens clínicas, etc)
-export const handleUpload = (req: Request, res: Response) => {
+
+const uploadService = new UploadService();
+
+
+// Upload genérico
+export const handleUpload = (
+  req: Request,
+  res: Response
+) => {
+
   if (!req.file) {
-    return res.status(400).json({ error: "Nenhum arquivo enviado" });
+    return res.status(400).json({
+      error: "Nenhum arquivo enviado",
+    });
   }
 
-  res.json({
+
+  const url =
+    uploadService.generatePublicUrl(
+      req.file.filename
+    );
+
+
+  return res.json({
     filename: req.file.filename,
-    path: req.file.path,
+    url,
   });
+
 };
 
-// 🟢 UPLOAD DE AVATAR
-export const uploadAvatar = async (req: Request, res: Response) => {
+
+
+
+// Upload Avatar
+
+export const uploadAvatar = async (
+  req: Request,
+  res: Response
+) => {
+
   try {
+
     if (!req.user) {
-      return res.status(401).json({ error: "Não autenticado" });
+      return res.status(401).json({
+        error: "Não autenticado",
+      });
     }
+
 
     if (!req.file) {
-      return res.status(400).json({ error: "Nenhum arquivo enviado" });
+      return res.status(400).json({
+        error: "Nenhum arquivo enviado",
+      });
     }
 
-    const { id, role } = req.user;
-    const filename = req.file.filename;
 
-    const publicUrl = `http://localhost:3000/uploads/${filename}`;
+    const {
+      id,
+      role,
+    } = req.user;
+
+
+    const avatarUrl =
+      uploadService.generatePublicUrl(
+        req.file.filename
+      );
+
+
 
     if (role === "dentist") {
+
       await prisma.dentist.update({
-        where: { id },
-        data: { avatar: publicUrl },
+        where: {
+          id,
+        },
+        data: {
+          avatar: avatarUrl,
+        },
       });
+
+
     } else {
+
+
       await prisma.patient.update({
-        where: { id },
-        data: { avatar: publicUrl },
+        where: {
+          id,
+        },
+        data: {
+          avatar: avatarUrl,
+        },
       });
+
     }
 
+
+
     return res.json({
-      avatarUrl: publicUrl,
+      avatarUrl,
     });
+
+
+
   } catch (error) {
-    console.error("Erro no upload de avatar:", error);
-    return res.status(500).json({ error: "Erro ao enviar avatar" });
+
+    console.error(
+      "Erro upload avatar:",
+      error
+    );
+
+
+    return res.status(500).json({
+      error: "Erro interno",
+    });
+
   }
+
 };

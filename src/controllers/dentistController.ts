@@ -1,97 +1,215 @@
-import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
 
-export const getDentistProfile = async (req: Request, res: Response) => {
+import {
+  DentistService,
+} from "../services/dentistService";
+
+
+const dentistService =
+  new DentistService();
+
+
+
+
+
+export const getDentistProfile = async (
+  req: Request,
+  res: Response
+) => {
+
+
   try {
-    const dentistId = req.user!.id;
 
-    const dentist = await prisma.dentist.findUnique({
-      where: { id: dentistId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        cro: true,
-        avatar: true, // 🟢
-        patients: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
 
-    if (!dentist) {
-      return res.status(404).json({ error: "Dentista não encontrado." });
+    const dentist =
+      await dentistService.getProfile(
+        req.user!.id
+      );
+
+
+    return res.json(
+      dentist
+    );
+
+
+  } catch(error) {
+
+
+    if(error instanceof Error) {
+
+
+      if(
+        error.message.includes(
+          "não encontrado"
+        )
+      ){
+
+        return res.status(404)
+          .json({
+            error:error.message,
+          });
+
+      }
+
+
     }
 
-    return res.json(dentist);
-  } catch (error) {
-    return res.status(500).json({ error: "Erro ao buscar perfil do dentista." });
+
+
+    return res.status(500)
+      .json({
+        error:
+          "Erro ao buscar perfil do dentista.",
+      });
+
+
   }
+
+
 };
 
-export const updateDentist = async (req: Request, res: Response) => {
+
+
+
+
+
+
+
+export const updateDentist = async (
+  req: Request,
+  res: Response
+) => {
+
+
   try {
-    const dentistId = req.user!.id;
-    const { name, email, password, cro } = req.body;
 
-    const existing = await prisma.dentist.findUnique({
-      where: { id: dentistId },
-    });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Dentista não encontrado." });
+    const {
+      name,
+      email,
+      password,
+      cro,
+    } = req.body;
+
+
+
+    const dentist =
+      await dentistService.updateDentist({
+
+        dentistId:req.user!.id,
+
+        name,
+
+        email,
+
+        password,
+
+        cro,
+
+      });
+
+
+
+    return res.json(
+      dentist
+    );
+
+
+  } catch(error) {
+
+
+    if(error instanceof Error){
+
+
+      if(
+        error.message.includes(
+          "não encontrado"
+        )
+      ){
+
+        return res.status(404)
+          .json({
+            error:error.message,
+          });
+
+      }
+
+
     }
 
-   const data: Prisma.DentistUpdateInput = {
-      name: name ?? existing.name,
-      email: email ?? existing.email,
-      cro: cro ?? existing.cro,
-      // avatar NÃO é alterado aqui (só pela rota de upload)
-    };
 
-    if (password) {
-      data.password = await bcrypt.hash(password, 10);
-    }
+    return res.status(500)
+      .json({
+        error:
+          "Erro ao atualizar dentista.",
+      });
 
-    const updated = await prisma.dentist.update({
-      where: { id: dentistId },
-      data,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        cro: true,
-        avatar: true, // 🟢
-      },
-    });
 
-    return res.json(updated);
-  } catch (error) {
-    return res.status(500).json({ error: "Erro ao atualizar dentista." });
   }
+
+
 };
 
-export const deleteDentist = async (req: Request, res: Response) => {
+
+
+
+
+
+
+
+
+export const deleteDentist = async (
+  req: Request,
+  res: Response
+) => {
+
+
   try {
-    const dentistId = req.user!.id;
 
-    const existing = await prisma.dentist.findUnique({
-      where: { id: dentistId },
-    });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Dentista não encontrado." });
+    const result =
+      await dentistService.deleteDentist(
+        req.user!.id
+      );
+
+
+    return res.json(
+      result
+    );
+
+
+  } catch(error) {
+
+
+    if(error instanceof Error){
+
+
+      if(
+        error.message.includes(
+          "não encontrado"
+        )
+      ){
+
+        return res.status(404)
+          .json({
+            error:error.message,
+          });
+
+      }
+
+
     }
 
-    await prisma.patient.deleteMany({ where: { dentistId } });
-    await prisma.dentist.delete({ where: { id: dentistId } });
 
-    return res.json({
-      message: "Dentista e pacientes associados foram excluídos.",
-    });
-  } catch (error) {
-    return res.status(500).json({ error: "Erro ao excluir dentista." });
+
+    return res.status(500)
+      .json({
+        error:
+          "Erro ao excluir dentista.",
+      });
+
+
   }
+
+
 };

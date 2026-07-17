@@ -5,20 +5,27 @@ const options: swaggerJsdoc.Options = {
     openapi: "3.0.0",
 
     info: {
-      title: "OdontoClínica API",
+      title: "OralSync API",
       version: "1.0.0",
       description:
-        "API para gerenciamento de acompanhamento odontológico, avaliações, escala de dor, pacientes, dentistas e comunicação em tempo real.",
+        "API REST para gerenciamento de acompanhamento odontológico, avaliações, escala de dor, pacientes, dentistas, mensagens e notificações.",
+      contact: {
+        name: "Matheus Gomes",
+        url: "https://github.com/Matheus9557",
+      },
+      license: {
+        name: "MIT",
+      },
     },
 
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Servidor local",
+        url: "https://odontoclinica-api.onrender.com",
+        description: "Produção",
       },
       {
-        url: "https://odontoclinica-api.onrender.com",
-        description: "Servidor produção",
+        url: "http://localhost:3000",
+        description: "Desenvolvimento local",
       },
     ],
 

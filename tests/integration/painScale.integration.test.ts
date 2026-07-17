@@ -362,5 +362,84 @@ it("GET /pain-scale/patient/:patientId should not allow another dentist access",
 
 });
 
+it("POST /pain-scale should reject second daily entry", async()=>{
+
+
+  const {
+    patientToken
+  } = await createPatient();
+
+
+
+  const {
+    evaluation
+  } =
+    await createEvaluation();
+
+
+
+  await request(app)
+    .post("/pain-scale")
+    .set(
+      "Authorization",
+      `Bearer ${patientToken}`
+    )
+    .field(
+      "scale",
+      "7"
+    )
+    .field(
+      "comments",
+      "Primeiro envio"
+    )
+    .field(
+      "evaluationId",
+      evaluation.id
+    )
+    .attach(
+      "image",
+      Buffer.from(
+        "fake image"
+      ),
+      "boca.png"
+    );
+
+
+
+  const response =
+    await request(app)
+      .post("/pain-scale")
+      .set(
+        "Authorization",
+        `Bearer ${patientToken}`
+      )
+      .field(
+        "scale",
+        "8"
+      )
+      .field(
+        "comments",
+        "Segundo envio"
+      )
+      .field(
+        "evaluationId",
+        evaluation.id
+      )
+      .attach(
+        "image",
+        Buffer.from(
+          "fake image"
+        ),
+        "boca2.png"
+      );
+
+
+
+  expect(response.status)
+    .toBe(409);
+
+
+});
+
 
 });

@@ -1,33 +1,78 @@
-import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import {
+  Request,
+  Response,
+} from "express";
 
-// retorna quantidade de não lidas
-export async function getUnreadCount(req: Request, res: Response) {
-  const { id: userId } = req.user!;
+import {
+  NotificationService,
+} from "../services/notificationService";
 
-  const count = await prisma.notification.count({
-    where: {
-      userId,
-      read: false,
-    },
-  });
 
-  return res.json({ unread: count });
+const service = new NotificationService();
+
+
+// retorna quantidade de notificações não lidas
+export async function getUnreadCount(
+  req: Request,
+  res: Response
+) {
+
+  try {
+
+    const {
+      id: userId,
+    } = req.user!;
+
+
+    const result =
+      await service.getUnreadCount(
+        userId
+      );
+
+
+    return res.json(result);
+
+
+  } catch {
+
+    return res.status(500).json({
+      error: "Erro ao buscar notificações.",
+    });
+
+  }
+
 }
 
-// marca todas como lidas
-export async function markAllAsRead(req: Request, res: Response) {
-  const { id: userId } = req.user!;
 
-  await prisma.notification.updateMany({
-    where: {
-      userId,
-      read: false,
-    },
-    data: {
-      read: true,
-    },
-  });
 
-  return res.status(204).send();
+
+// marca todas as notificações como lidas
+export async function markAllAsRead(
+  req: Request,
+  res: Response
+) {
+
+  try {
+
+    const {
+      id: userId,
+    } = req.user!;
+
+
+    await service.markAllAsRead(
+      userId
+    );
+
+
+    return res.status(204).send();
+
+
+  } catch {
+
+    return res.status(500).json({
+      error: "Erro ao atualizar notificações.",
+    });
+
+  }
+
 }
