@@ -1,78 +1,38 @@
-import {
-  Request,
-  Response,
-} from "express";
-
-import {
-  NotificationService,
-} from "../services/notificationService";
-
+import { Request, Response, NextFunction } from "express";
+import { NotificationService } from "../services/notificationService";
 
 const service = new NotificationService();
 
-
-// retorna quantidade de notificações não lidas
-export async function getUnreadCount(
+export const getUnreadCount = async (
   req: Request,
-  res: Response
-) {
-
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const { id } = req.user!;
 
-    const {
-      id: userId,
-    } = req.user!;
-
-
-    const result =
-      await service.getUnreadCount(
-        userId
-      );
-
+    const result = await service.getUnreadCount(id);
 
     return res.json(result);
 
-
-  } catch {
-
-    return res.status(500).json({
-      error: "Erro ao buscar notificações.",
-    });
-
+  } catch (error) {
+    next(error);
   }
+};
 
-}
-
-
-
-
-// marca todas as notificações como lidas
-export async function markAllAsRead(
+export const markAllAsRead = async (
   req: Request,
-  res: Response
-) {
-
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const { id } = req.user!;
 
-    const {
-      id: userId,
-    } = req.user!;
-
-
-    await service.markAllAsRead(
-      userId
-    );
-
+    await service.markAllAsRead(id);
 
     return res.status(204).send();
 
-
-  } catch {
-
-    return res.status(500).json({
-      error: "Erro ao atualizar notificações.",
-    });
-
+  } catch (error) {
+    next(error);
   }
-
-}
+};

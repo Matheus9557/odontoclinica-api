@@ -1,5 +1,5 @@
 import { PainScaleRepository } from "../repositories/painScaleRepository";
-
+import { AppError } from "../errors/AppError";
 
 export class PainScaleService {
 
@@ -58,9 +58,10 @@ export class PainScaleService {
 
     ) {
 
-      throw new Error(
-        "Escala deve ser um número inteiro entre 1 e 10."
-      );
+      throw new AppError(
+        "Escala deve ser um número inteiro entre 1 e 10.",
+          400
+            );
 
     }
 
@@ -76,9 +77,10 @@ export class PainScaleService {
 
     if (!patient) {
 
-      throw new Error(
-        "Paciente não encontrado."
-      );
+      throw new AppError(
+        "Paciente não encontrado.",
+          404
+            );
 
     }
 
@@ -104,9 +106,10 @@ export class PainScaleService {
 
     if (!evaluation) {
 
-      throw new Error(
-        "Avaliação não encontrada para este paciente."
-      );
+      throw new AppError(
+        "Avaliação não encontrada para este paciente.",
+          404
+            );
 
     }
 
@@ -132,9 +135,10 @@ export class PainScaleService {
 
     ) {
 
-      throw new Error(
-        "A avaliação não está ativa."
-      );
+      throw new AppError(
+        "A avaliação não está ativa.",
+          400
+            );
 
     }
 
@@ -163,9 +167,10 @@ export class PainScaleService {
 
     if (existingEntry) {
 
-      throw new Error(
-        "Paciente já enviou o relato diário."
-      );
+      throw new AppError(
+        "Paciente já enviou o relato diário.",
+          409
+            );
 
     }
 
@@ -233,9 +238,10 @@ export class PainScaleService {
 
     if (!patient) {
 
-      throw new Error(
-        "Paciente não encontrado."
-      );
+      throw new AppError(
+        "Paciente não encontrado.",
+          404
+            );
 
     }
 
@@ -256,9 +262,10 @@ export class PainScaleService {
 
     ) {
 
-      throw new Error(
-        "Acesso negado."
-      );
+      throw new AppError(
+        "Acesso negado.",
+          403
+            );
 
     }
 

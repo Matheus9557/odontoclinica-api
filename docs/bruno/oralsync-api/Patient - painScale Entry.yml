@@ -1,0 +1,45 @@
+info:
+  name: Patient - painScale Entry
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: "{{baseUrl}}/pain-scale"
+  headers:
+    - name: Authorization
+      value: Bearer {{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs}}
+  body:
+    type: multipart-form
+    data:
+      - name: scale
+        type: text
+        value: "7"
+        contentType: text/plain
+      - name: comments
+        type: text
+        value: Dor moderada após procedimento
+        contentType: text/plain
+      - name: evaluationId
+        type: text
+        value: cmrtamryd0004ij85q9d2lnaw
+        contentType: text/plain
+      - name: image
+        type: file
+        value:
+          - /home/matheus/Imagens/Capturas de tela/Captura de tela de 2026-07-20 09-13-52.png
+        contentType: image/png
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+    - name: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

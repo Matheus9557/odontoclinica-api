@@ -1,0 +1,29 @@
+info:
+  name: Signup Dentist
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/signup/dentist"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Dr. João",
+        "email": "joao@teste.com",
+        "password": "123456",
+        "cro": "123456-PB"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

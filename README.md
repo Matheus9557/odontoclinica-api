@@ -1,8 +1,6 @@
 # OdontoClínica API — Backend 🦷
 
-Backend REST API desenvolvida para gerenciamento de acompanhamento odontológico, permitindo comunicação entre dentistas e pacientes, registro de avaliações clínicas, acompanhamento da escala de dor, gerenciamento de usuários, notificações e comunicação em tempo real.
-
-O projeto simula uma plataforma SaaS odontológica com foco em arquitetura escalável, organização de código, testes automatizados, boas práticas backend e documentação de API.
+Backend REST API desenvolvida para gerenciamento de acompanhamento odontológico, permitindo comunicação entre dentistas e pacientes, registro de avaliações clínicas, acompanhamento da escala de dor, gerenciamento de usuários, notificações e comunicação entre usuários.
 
 ---
 
@@ -91,13 +89,18 @@ Dentistas podem visualizar o histórico para acompanhamento da evolução clíni
 
 ---
 
-## 💬 Comunicação em tempo real
+## 💬 Comunicação entre usuários
 
-Implementado utilizando Socket.IO para:
+Sistema de mensagens entre paciente e dentista.
 
-- Chat paciente ↔ dentista
-- Comunicação bidirecional
-- Eventos em tempo real
+Implementado utilizando:
+
+- Persistência de mensagens via API REST
+- Comunicação bidirecional entre usuários
+- Histórico de conversas
+- Sistema de notificações integrado
+
+A comunicação em tempo real utilizando Socket.IO está preparada na arquitetura e será validada/evoluída na próxima etapa.
 
 
 ---
@@ -120,6 +123,9 @@ Suporte para:
 - Upload de imagens clínicas
 - Upload de avatar dos usuários
 - Geração de URLs públicas para arquivos
+- Upload utilizando multipart/form-data
+- Associação das imagens aos registros clínicos
+- Persistência das URLs no banco de dados
 
 
 ---
@@ -161,6 +167,15 @@ Principais entidades:
 
 
 As migrations são gerenciadas pelo Prisma.
+
+
+Relacionamentos principais:
+
+- Dentist possui múltiplos Patients
+- Patient possui avaliações odontológicas
+- Evaluation possui registros de escala de dor
+- Dentist e Patient possuem comunicação por mensagens
+- Usuários possuem notificações associadas
 
 
 ---
@@ -219,6 +234,32 @@ npm test
 
 ---
 
+
+---
+
+# 🔎 Validação da API
+
+A API foi validada manualmente utilizando Bruno API Client.
+
+Fluxos testados:
+
+- Autenticação completa (Dentista e Paciente)
+- Criação e gerenciamento de pacientes
+- Criação de avaliações odontológicas
+- Registro de escala de dor com upload de imagens
+- Upload de avatar dos usuários
+- Comunicação entre pacientes e dentistas
+- Sistema de notificações
+
+Ambiente validado:
+
+- API em produção (Render)
+- Banco PostgreSQL em produção
+- Swagger/OpenAPI funcionando
+
+
+---
+
 # 📚 Documentação da API
 
 A API possui documentação Swagger/OpenAPI.
@@ -232,6 +273,23 @@ https://odontoclinica-api.onrender.com/api-docs
 Preview:
 
 ![Swagger API](docs/swagger.png)
+
+
+---
+
+# 📮 Bruno Collection
+
+A API possui uma coleção Bruno para testes dos principais fluxos:
+
+- Authentication
+- Patients
+- Evaluations
+- Pain Scale
+- Messages
+- Notifications
+- Upload
+
+A coleção está disponível em: /docs/bruno/oralsync-api
 
 
 ---

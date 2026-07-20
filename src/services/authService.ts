@@ -5,6 +5,7 @@ import { AuthRepository } from "../repositories/authRepository";
 import { isValidCro } from "../validators/croValidator";
 import { JWT_SECRET } from "../config/jwt";
 import { UserRole } from "../types/auth";
+import { AppError } from "../errors/AppError";
 
 export class AuthService {
   private repository = new AuthRepository();
@@ -18,13 +19,13 @@ export class AuthService {
     const { name, email, password, cro } = data;
 
     if (!isValidCro(cro)) {
-      throw new Error("CRO inválido.");
+      throw new AppError("CRO inválido.", 400);
     }
 
     const exists = await this.repository.findDentistByEmail(email);
 
     if (exists) {
-      throw new Error("E-mail já cadastrado.");
+      throw new AppError("E-mail já cadastrado.", 409);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,7 +49,6 @@ export class AuthService {
     };
   }
 
-
   async signupPatient(data: {
     name: string;
     email: string;
@@ -62,26 +62,22 @@ export class AuthService {
       dentistId,
     } = data;
 
-
     const exists =
       await this.repository.findPatientByEmail(email);
 
     if (exists) {
-      throw new Error("E-mail já cadastrado.");
+      throw new AppError("E-mail já cadastrado.", 409);
     }
-
 
     const dentistExists =
       await this.repository.dentistExists(dentistId);
 
     if (!dentistExists) {
-      throw new Error("Dentista não encontrado.");
+      throw new AppError("Dentista não encontrado.", 404);
     }
-
 
     const hashedPassword =
       await bcrypt.hash(password, 10);
-
 
     const patient =
       await this.repository.createPatient({
@@ -90,7 +86,6 @@ export class AuthService {
         password: hashedPassword,
         dentistId,
       });
-
 
     return {
       message: "Paciente cadastrado com sucesso!",
@@ -104,31 +99,26 @@ export class AuthService {
     };
   }
 
-
   async login(
-  email: string,
-  password: string,
-  role: UserRole
-) {
-
+    email: string,
+    password: string,
+    role: UserRole
+  ) {
     if (
       role !== "dentist" &&
       role !== "patient"
     ) {
-      throw new Error("Role inválido.");
+      throw new AppError("Role inválido.", 400);
     }
-
 
     const user =
       role === "dentist"
         ? await this.repository.findDentistByEmail(email)
         : await this.repository.findPatientByEmail(email);
 
-
     if (!user) {
-      throw new Error("Credenciais inválidas.");
+      throw new AppError("Credenciais inválidas.", 401);
     }
-
 
     const validPassword =
       await bcrypt.compare(
@@ -136,11 +126,9 @@ export class AuthService {
         user.password
       );
 
-
     if (!validPassword) {
-      throw new Error("Credenciais inválidas.");
+      throw new AppError("Credenciais inválidas.", 401);
     }
-
 
     const token = jwt.sign(
       {
@@ -152,7 +140,6 @@ export class AuthService {
         expiresIn: "7d",
       }
     );
-
 
     return {
       token,
@@ -166,22 +153,18 @@ export class AuthService {
     };
   }
 
-
   async me(
-  id: string,
-  role: UserRole
-     ) {
-
+    id: string,
+    role: UserRole
+  ) {
     const user =
       role === "dentist"
         ? await this.repository.findDentistById(id)
         : await this.repository.findPatientById(id);
 
-
     if (!user) {
-      throw new Error("Usuário não encontrado.");
+      throw new AppError("Usuário não encontrado.", 404);
     }
-
 
     return {
       ...user,

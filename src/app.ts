@@ -16,6 +16,8 @@ import messageRoutes from "./routes/messages";
 import painScaleRoutes from "./routes/painScale";
 import notificationRoutes from "./routes/notification";
 
+import { errorHandler } from "./middlewares/errorHandler";
+
 dotenv.config();
 
 const app = express();
@@ -66,5 +68,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get("/", (_req, res) => {
   res.send("🚀 API Odontoclínica funcionando!");
 });
+
+/* =======================
+   ERROR HANDLER
+======================= */
+
+app.use(errorHandler);
 
 export default app;

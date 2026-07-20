@@ -1,4 +1,5 @@
 import { EvaluationRepository } from "../repositories/evaluationRepository";
+import { AppError } from "../errors/AppError";
 
 export class EvaluationService {
   private readonly repository = new EvaluationRepository();
@@ -16,11 +17,17 @@ export class EvaluationService {
       await this.repository.findPatientById(patientId);
 
     if (!patient) {
-      throw new Error("Paciente não encontrado.");
+      throw new AppError(
+        "Paciente não encontrado.",
+          404
+            );
     }
 
     if (patient.dentistId !== dentistId) {
-      throw new Error("Paciente não pertence a este dentista.");
+      throw new AppError(
+        "Paciente não pertence a este dentista.",
+          403
+          );
     }
 
     const startDate = new Date();
@@ -49,11 +56,17 @@ export class EvaluationService {
       await this.repository.findPatientById(patientId);
 
     if (!patient) {
-      throw new Error("Paciente não encontrado.");
+      throw new AppError(
+        "Paciente não encontrado.",
+          404
+            );
     }
 
     if (patient.dentistId !== dentistId) {
-      throw new Error("Paciente não pertence a este dentista.");
+      throw new AppError(
+        "Paciente não pertence a este dentista.",
+          403
+          );
     }
 
     return this.repository.findAllByPatient(patientId);

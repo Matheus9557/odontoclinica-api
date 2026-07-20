@@ -1,0 +1,25 @@
+info:
+  name: Dentist - patients
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{baseUrl}}/patients"
+  headers:
+    - name: Authorization
+      value: Bearer {{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ3MnNyaDAwMDBpajg1Zmg3dTEwYjQiLCJyb2xlIjoiZGVudGlzdCIsImlhdCI6MTc4NDU1MDkxNywiZXhwIjoxNzg1MTU1NzE3fQ.S1dJfSX_XYTEP52HvaN1U_f0Iy71tx2P9kzjlTPKm6w}}
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+    - name: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ3MnNyaDAwMDBpajg1Zmg3dTEwYjQiLCJyb2xlIjoiZGVudGlzdCIsImlhdCI6MTc4NDU1MDkxNywiZXhwIjoxNzg1MTU1NzE3fQ.S1dJfSX_XYTEP52HvaN1U_f0Iy71tx2P9kzjlTPKm6w
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ3MnNyaDAwMDBpajg1Zmg3dTEwYjQiLCJyb2xlIjoiZGVudGlzdCIsImlhdCI6MTc4NDU1MDkxNywiZXhwIjoxNzg1MTU1NzE3fQ.S1dJfSX_XYTEP52HvaN1U_f0Iy71tx2P9kzjlTPKm6w
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

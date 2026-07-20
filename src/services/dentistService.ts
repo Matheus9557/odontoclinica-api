@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
+import { AppError } from "../errors/AppError";
 
 import {
   DentistRepository,
@@ -28,9 +29,10 @@ export class DentistService {
 
     if (!dentist) {
 
-      throw new Error(
-        "Dentista não encontrado."
-      );
+      throw new AppError(
+        "Dentista não encontrado.",
+          404
+            );
 
     }
 
@@ -77,9 +79,10 @@ export class DentistService {
 
     if (!dentist) {
 
-      throw new Error(
-        "Dentista não encontrado."
-      );
+      throw new AppError(
+        "Dentista não encontrado.",
+          404
+            );
 
     }
 
@@ -155,9 +158,10 @@ export class DentistService {
 
     if (!dentist) {
 
-      throw new Error(
-        "Dentista não encontrado."
-      );
+      throw new AppError(
+        "Dentista não encontrado.",
+          404
+            );
 
     }
 

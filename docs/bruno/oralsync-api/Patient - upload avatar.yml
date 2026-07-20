@@ -1,0 +1,37 @@
+info:
+  name: Patient - upload avatar
+  type: http
+  seq: 13
+
+http:
+  method: POST
+  url: "{{baseUrl}}/upload/avatar"
+  headers:
+    - name: Authorization
+      value: Bearer {{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs}}
+  params:
+    - name: ""
+      value: ""
+      type: query
+  body:
+    type: multipart-form
+    data:
+      - name: avatar
+        type: file
+        value:
+          - /home/matheus/Imagens/Capturas de tela/Captura de tela de 2026-06-09 22-42-31.png
+        contentType: image/png
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+    - name: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

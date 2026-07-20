@@ -1,3 +1,5 @@
+import { AppError } from "../errors/AppError";
+
 import {
   NotificationRepository,
 } from "../repositories/notificationRepository";
@@ -15,10 +17,10 @@ export class NotificationService {
 
     if (!userId) {
 
-      throw new Error(
-        "Usuário não informado."
-      );
-
+      throw new AppError(
+        "Usuário não informado.",
+          400
+            );
     }
 
 
@@ -43,9 +45,10 @@ export class NotificationService {
 
     if (!userId) {
 
-      throw new Error(
-        "Usuário não informado."
-      );
+      throw new AppError(
+        "Usuário não informado.",
+          400
+            );
 
     }
 
@@ -68,9 +71,10 @@ export class NotificationService {
 
     if (!userId) {
 
-      throw new Error(
-        "Usuário não informado."
-      );
+      throw new AppError(
+        "Usuário não informado.",
+          400
+            );
 
     }
 

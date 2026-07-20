@@ -1,0 +1,32 @@
+info:
+  name: Patient - Send Message
+  type: http
+  seq: 15
+
+http:
+  method: POST
+  url: "{{baseUrl}}/messages/send"
+  headers:
+    - name: Authorization
+      value: Bearer {{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs}}
+  body:
+    type: json
+    data: |-
+      {
+        "receiverId": "cmrt72srh0000ij85fh7u10b4",
+        "content": "Estou melhor."
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+    - name: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnQ5cjMxbTAwMDJpajg1dDk5azR2ZWwiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTc4NDU1NDc1NSwiZXhwIjoxNzg1MTU5NTU1fQ.hhGDDm-nG5CsCtqxP2lzwmyUmfj-FubgAl_gUtEgrjs
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

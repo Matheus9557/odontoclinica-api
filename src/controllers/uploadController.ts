@@ -1,122 +1,82 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 import { UploadService } from "../services/uploadService";
-
+import { AppError } from "../errors/AppError";
 
 const uploadService = new UploadService();
 
-
-// Upload genérico
 export const handleUpload = (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
+  try {
+    if (!req.file) {
+      throw new AppError(
+        "Nenhum arquivo enviado",
+        400
+      );
+    }
 
-  if (!req.file) {
-    return res.status(400).json({
-      error: "Nenhum arquivo enviado",
+    const url =
+      uploadService.generatePublicUrl(
+        req.file.filename
+      );
+
+    return res.json({
+      filename: req.file.filename,
+      url,
     });
+
+  } catch (error) {
+    next(error);
   }
-
-
-  const url =
-    uploadService.generatePublicUrl(
-      req.file.filename
-    );
-
-
-  return res.json({
-    filename: req.file.filename,
-    url,
-  });
-
 };
-
-
-
-
-// Upload Avatar
 
 export const uploadAvatar = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-
   try {
-
     if (!req.user) {
-      return res.status(401).json({
-        error: "Não autenticado",
-      });
+      throw new AppError(
+        "Não autenticado",
+        401
+      );
     }
-
 
     if (!req.file) {
-      return res.status(400).json({
-        error: "Nenhum arquivo enviado",
-      });
+      throw new AppError(
+        "Nenhum arquivo enviado",
+        400
+      );
     }
 
-
-    const {
-      id,
-      role,
-    } = req.user;
-
+    const { id, role } = req.user;
 
     const avatarUrl =
       uploadService.generatePublicUrl(
         req.file.filename
       );
 
-
-
     if (role === "dentist") {
-
       await prisma.dentist.update({
-        where: {
-          id,
-        },
-        data: {
-          avatar: avatarUrl,
-        },
+        where: { id },
+        data: { avatar: avatarUrl },
       });
-
-
     } else {
-
-
       await prisma.patient.update({
-        where: {
-          id,
-        },
-        data: {
-          avatar: avatarUrl,
-        },
+        where: { id },
+        data: { avatar: avatarUrl },
       });
-
     }
-
-
 
     return res.json({
       avatarUrl,
     });
 
-
-
   } catch (error) {
-
-    console.error(
-      "Erro upload avatar:",
-      error
-    );
-
-
-    return res.status(500).json({
-      error: "Erro interno",
-    });
-
+    next(error);
   }
-
 };

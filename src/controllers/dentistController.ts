@@ -1,215 +1,52 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import { DentistService } from "../services/dentistService";
 
-import {
-  DentistService,
-} from "../services/dentistService";
-
-
-const dentistService =
-  new DentistService();
-
-
-
-
+const dentistService = new DentistService();
 
 export const getDentistProfile = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-
-
   try {
+    const dentist = await dentistService.getProfile(req.user!.id);
 
-
-    const dentist =
-      await dentistService.getProfile(
-        req.user!.id
-      );
-
-
-    return res.json(
-      dentist
-    );
-
-
-  } catch(error) {
-
-
-    if(error instanceof Error) {
-
-
-      if(
-        error.message.includes(
-          "não encontrado"
-        )
-      ){
-
-        return res.status(404)
-          .json({
-            error:error.message,
-          });
-
-      }
-
-
-    }
-
-
-
-    return res.status(500)
-      .json({
-        error:
-          "Erro ao buscar perfil do dentista.",
-      });
-
-
+    return res.json(dentist);
+  } catch (error) {
+    next(error);
   }
-
-
 };
-
-
-
-
-
-
-
 
 export const updateDentist = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-
-
   try {
+    const dentist = await dentistService.updateDentist({
+      dentistId: req.user!.id,
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      cro: req.body.cro,
+    });
 
-
-    const {
-      name,
-      email,
-      password,
-      cro,
-    } = req.body;
-
-
-
-    const dentist =
-      await dentistService.updateDentist({
-
-        dentistId:req.user!.id,
-
-        name,
-
-        email,
-
-        password,
-
-        cro,
-
-      });
-
-
-
-    return res.json(
-      dentist
-    );
-
-
-  } catch(error) {
-
-
-    if(error instanceof Error){
-
-
-      if(
-        error.message.includes(
-          "não encontrado"
-        )
-      ){
-
-        return res.status(404)
-          .json({
-            error:error.message,
-          });
-
-      }
-
-
-    }
-
-
-    return res.status(500)
-      .json({
-        error:
-          "Erro ao atualizar dentista.",
-      });
-
-
+    return res.json(dentist);
+  } catch (error) {
+    next(error);
   }
-
-
 };
-
-
-
-
-
-
-
-
 
 export const deleteDentist = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
-
-
   try {
+    const result = await dentistService.deleteDentist(req.user!.id);
 
-
-    const result =
-      await dentistService.deleteDentist(
-        req.user!.id
-      );
-
-
-    return res.json(
-      result
-    );
-
-
-  } catch(error) {
-
-
-    if(error instanceof Error){
-
-
-      if(
-        error.message.includes(
-          "não encontrado"
-        )
-      ){
-
-        return res.status(404)
-          .json({
-            error:error.message,
-          });
-
-      }
-
-
-    }
-
-
-
-    return res.status(500)
-      .json({
-        error:
-          "Erro ao excluir dentista.",
-      });
-
-
+    return res.json(result);
+  } catch (error) {
+    next(error);
   }
-
-
 };

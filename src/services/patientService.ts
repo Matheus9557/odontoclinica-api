@@ -3,6 +3,8 @@ import { Prisma } from "@prisma/client";
 
 import { PatientRepository } from "../repositories/patientRepository";
 
+import { AppError } from "../errors/AppError";
+
 export class PatientService {
   private readonly repository = new PatientRepository();
 
@@ -20,13 +22,19 @@ export class PatientService {
     } = data;
 
     if (!name || !email || !password) {
-      throw new Error("Nome, email e senha são obrigatórios.");
+      throw new AppError(
+        "Nome, email e senha são obrigatórios.",
+          400
+             );
     }
 
     const exists = await this.repository.findByEmail(email);
 
     if (exists) {
-      throw new Error("Paciente com este e-mail já existe.");
+      throw new AppError(
+        "Paciente com este e-mail já existe.",
+          409
+              );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,7 +70,10 @@ export class PatientService {
       await this.repository.findById(patientId);
 
     if (!patient || patient.dentistId !== dentistId) {
-      throw new Error("Acesso negado.");
+      throw new AppError(
+        "Acesso negado.",
+          403
+            );
     }
 
     const updateData: Prisma.PatientUpdateInput = {};
@@ -99,7 +110,10 @@ export class PatientService {
       await this.repository.findById(patientId);
 
     if (!patient || patient.dentistId !== dentistId) {
-      throw new Error("Acesso negado.");
+      throw new AppError(
+        "Acesso negado.",
+          403
+            );
     }
 
     await this.repository.delete(patientId);
@@ -114,7 +128,10 @@ export class PatientService {
       await this.repository.findProfile(patientId);
 
     if (!patient) {
-      throw new Error("Paciente não encontrado.");
+      throw new AppError(
+        "Paciente não encontrado.",
+          404
+            );
     }
 
     return patient;

@@ -1,0 +1,29 @@
+info:
+  name: Create Patient
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/signup/patient"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Maria Silva",
+        "email": "maria@teste.com",
+        "password": "123456",
+        "dentistId": "cmrt72srh0000ij85fh7u10b4"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

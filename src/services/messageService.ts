@@ -1,3 +1,5 @@
+import { AppError } from "../errors/AppError";
+
 import {
   SenderType,
 } from "@prisma/client";
@@ -45,9 +47,10 @@ export class MessageService {
 
     if (!content) {
 
-      throw new Error(
-        "Mensagem não pode ser vazia."
-      );
+      throw new AppError(
+        "Mensagem não pode ser vazia.",
+          400
+            );
 
     }
 
@@ -73,9 +76,10 @@ export class MessageService {
 
       if (!patient) {
 
-        throw new Error(
-          "Paciente não encontrado."
-        );
+        throw new AppError(
+          "Paciente não encontrado.",
+            404
+              );
 
       }
 
@@ -85,9 +89,10 @@ export class MessageService {
         patient.dentistId !== senderId
       ) {
 
-        throw new Error(
-          "Paciente não pertence a este dentista."
-        );
+        throw new AppError(
+          "Paciente não pertence a este dentista.",
+            403
+              );
 
       }
 
@@ -114,9 +119,10 @@ export class MessageService {
 
       if (!patient) {
 
-        throw new Error(
-          "Paciente não encontrado."
-        );
+        throw new AppError(
+          "Paciente não encontrado.",
+            404
+              );
 
       }
 
@@ -225,9 +231,10 @@ export class MessageService {
 
     if (!patient) {
 
-      throw new Error(
-        "Paciente não encontrado."
-      );
+      throw new AppError(
+          "Paciente não encontrado.",
+            404
+              );
 
     }
 
@@ -241,9 +248,10 @@ export class MessageService {
         patient.dentistId !== userId
       ) {
 
-        throw new Error(
-          "Paciente não pertence a este dentista."
-        );
+        throw new AppError(
+          "Paciente não pertence a este dentista.",
+            403
+              );
 
       }
 
@@ -260,9 +268,10 @@ export class MessageService {
         patient.id !== userId
       ) {
 
-        throw new Error(
-          "Acesso negado."
-        );
+        throw new AppError(
+          "Acesso negado.",
+            403
+              );
 
       }
 
