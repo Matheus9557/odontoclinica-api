@@ -1,9 +1,19 @@
 import { prisma } from "../lib/prisma";
+import { logger } from "../lib/logger";
 
 export async function cleanupMessages() {
-  await prisma.message.deleteMany({
-    where: { expiresAt: { lt: new Date() } }
+  const result = await prisma.message.deleteMany({
+    where: {
+      expiresAt: {
+        lt: new Date(),
+      },
+    },
   });
 
-  console.log("Mensagens expiradas removidas");
+  logger.info(
+    {
+      deletedMessages: result.count,
+    },
+    "Limpeza automática de mensagens expiradas executada"
+  );
 }

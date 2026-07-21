@@ -1,13 +1,18 @@
 import { Router } from "express";
+
 import {
   signupDentist,
   signupPatient,
   login,
 } from "../controllers/authController";
 
+import {
+  authRateLimiter,
+} from "../middlewares/rateLimiter";
+
+
 const router = Router();
 
-console.log("🔥 Rotas de autenticação carregadas!");
 
 /**
  * @swagger
@@ -57,7 +62,11 @@ console.log("🔥 Rotas de autenticação carregadas!");
  *       409:
  *         description: E-mail já cadastrado
  */
-router.post("/signup/dentist", signupDentist);
+router.post(
+  "/signup/dentist",
+  authRateLimiter,
+  signupDentist
+);
 
 
 /**
@@ -102,7 +111,11 @@ router.post("/signup/dentist", signupDentist);
  *       409:
  *         description: E-mail já cadastrado
  */
-router.post("/signup/patient", signupPatient);
+router.post(
+  "/signup/patient",
+  authRateLimiter,
+  signupPatient
+);
 
 
 /**
@@ -142,7 +155,11 @@ router.post("/signup/patient", signupPatient);
  *       401:
  *         description: Credenciais inválidas
  */
-router.post("/login", login);
+router.post(
+  "/login",
+  authRateLimiter,
+  login
+);
 
 
 export default router;

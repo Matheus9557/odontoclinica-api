@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/AppError";
+import { logger } from "../lib/logger";
 
 export function errorHandler(
   err: Error,
@@ -17,7 +18,15 @@ export function errorHandler(
 
   }
 
-  console.error(err);
+  logger.error(
+  {
+    err,
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  },
+  "Erro interno não tratado"
+);
 
   return res.status(500).json({
     success: false,

@@ -1,5 +1,6 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
+import { logger } from "./lib/logger";
 
 let io: Server;
 
@@ -12,16 +13,28 @@ export function initSocket(server: http.Server): Server {
   });
 
   io.on("connection", (socket: Socket) => {
-    console.log("🟢 Usuário conectado:", socket.id);
+    logger.info(
+  { socketId: socket.id },
+  "Cliente conectado ao Socket.IO"
+);
 
     // Registra o usuário na sua sala privada
     socket.on("register_user", (userId: string) => {
       socket.join(userId);
-      console.log(`🔔 Usuário ${userId} registrado para notificações`);
+      logger.info(
+  {
+    socketId: socket.id,
+    userId,
+  },
+  "Usuário registrado para notificações"
+);
     });
 
     socket.on("disconnect", () => {
-      console.log("🔴 Usuário desconectado:", socket.id);
+      logger.info(
+  { socketId: socket.id },
+  "Cliente desconectado do Socket.IO"
+);
     });
   });
 
@@ -34,7 +47,9 @@ export function notifyUser(
   payload: Record<string, unknown>
 ): void {
   if (!io) {
-    console.warn("⚠️ Socket.IO ainda não foi inicializado.");
+    logger.warn(
+  "Tentativa de envio de notificação antes da inicialização do Socket.IO"
+);
     return;
   }
 

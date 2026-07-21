@@ -1,10 +1,13 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
-
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import pinoHttp from "pino-http";
+import { logger } from "./lib/logger";
+import helmet from "helmet";
+import compression from "compression";
+
 
 // Rotas
 import authRoutes from "./routes/auth";
@@ -16,11 +19,42 @@ import messageRoutes from "./routes/messages";
 import painScaleRoutes from "./routes/painScale";
 import notificationRoutes from "./routes/notification";
 
-import { errorHandler } from "./middlewares/errorHandler";
 
-dotenv.config();
+// Middlewares
+import { errorHandler } from "./middlewares/errorHandler";
+import { globalRateLimiter } from "./middlewares/rateLimiter";
+
 
 const app = express();
+
+
+/* =======================
+   LOGGING
+======================= */
+
+app.use(
+  pinoHttp({
+    logger,
+  })
+);
+
+
+/* =======================
+   SECURITY
+======================= */
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
+
+app.use(compression());
+
+
+app.use(globalRateLimiter);
+
 
 /* =======================
    MIDDLEWARES
@@ -33,8 +67,15 @@ app.use(
   })
 );
 
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
 
 /* =======================
    SWAGGER DOCUMENTATION
@@ -46,33 +87,57 @@ app.use(
   swaggerUi.setup(swaggerSpec)
 );
 
+
 /* =======================
    ROTAS
 ======================= */
 
 app.use("/auth", authRoutes);
+
 app.use("/dentists", dentistRoutes);
+
 app.use("/patients", patientRoutes);
+
 app.use("/evaluations", evaluationRoutes);
+
 app.use("/upload", uploadRoutes);
+
 app.use("/messages", messageRoutes);
+
 app.use("/pain-scale", painScaleRoutes);
+
 app.use("/notifications", notificationRoutes);
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
+);
+
 
 /* =======================
    HEALTH CHECK
 ======================= */
 
 app.get("/", (_req, res) => {
-  res.send("🚀 API Odontoclínica funcionando!");
+
+  logger.info(
+    "Health check realizado"
+  );
+
+  res.send(
+    "🚀 API Odontoclínica funcionando!"
+  );
 });
+
 
 /* =======================
    ERROR HANDLER
 ======================= */
 
 app.use(errorHandler);
+
 
 export default app;
