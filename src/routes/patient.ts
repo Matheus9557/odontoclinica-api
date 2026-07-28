@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticate, onlyDentist, onlyPatient } from '../middlewares/authMiddleware';
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 
 import {
   createPatient,
@@ -40,7 +41,7 @@ const router = Router();
  *       404:
  *         description: Paciente não encontrado
  */
-router.get('/me', authenticate, onlyPatient, getMe);
+router.get('/me', authenticate, authorize("patient"), getMe);
 
 
 /**
@@ -87,7 +88,7 @@ router.get('/me', authenticate, onlyPatient, getMe);
  *       409:
  *         description: Paciente já cadastrado
  */
-router.post('/', authenticate, onlyDentist, createPatient);
+router.post('/', authenticate, authorize("dentist"), createPatient);
 
 
 /**
@@ -108,7 +109,7 @@ router.post('/', authenticate, onlyDentist, createPatient);
  *       403:
  *         description: Usuário não possui permissão de dentista
  */
-router.get('/', authenticate, onlyDentist, getPatientsByDentist);
+router.get('/', authenticate, authorize("dentist"), getPatientsByDentist);
 
 
 /**
@@ -155,7 +156,7 @@ router.get('/', authenticate, onlyDentist, getPatientsByDentist);
  *       404:
  *         description: Paciente não encontrado
  */
-router.put('/:id', authenticate, onlyDentist, updatePatient);
+router.put('/:id', authenticate, authorize("dentist"), updatePatient);
 
 
 /**
@@ -186,7 +187,7 @@ router.put('/:id', authenticate, onlyDentist, updatePatient);
  *       404:
  *         description: Paciente não encontrado
  */
-router.delete('/:id', authenticate, onlyDentist, deletePatient);
+router.delete('/:id', authenticate, authorize("dentist"), deletePatient);
 
 
 export default router;

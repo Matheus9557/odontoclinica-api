@@ -1,13 +1,14 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
 import { logger } from "./lib/logger";
+import { env } from "./config/env";
 
 let io: Server;
 
 export function initSocket(server: http.Server): Server {
   io = new Server(server, {
     cors: {
-      origin: process.env.FRONTEND_URL,
+      origin: env.FRONTEND_URL,
       credentials: true,
     },
   });
@@ -54,4 +55,8 @@ export function notifyUser(
   }
 
   io.to(userId).emit("notification:new_message", payload);
+}
+
+export function getIO(): Server | undefined {
+  return io;
 }

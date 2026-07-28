@@ -1,8 +1,7 @@
 import { Router } from "express";
 
-import {
-  authenticate,
-} from "../middlewares/authMiddleware";
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 
 import {
   sendMessage,

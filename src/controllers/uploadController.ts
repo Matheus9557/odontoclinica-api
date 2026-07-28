@@ -3,14 +3,18 @@ import { prisma } from "../lib/prisma";
 import { UploadService } from "../services/uploadService";
 import { AppError } from "../errors/AppError";
 
+
 const uploadService = new UploadService();
 
-export const handleUpload = (
+
+export const handleUpload = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+
   try {
+
     if (!req.file) {
       throw new AppError(
         "Nenhum arquivo enviado",
@@ -18,27 +22,37 @@ export const handleUpload = (
       );
     }
 
+
     const url =
-      uploadService.generatePublicUrl(
-        req.file.filename
+      await uploadService.uploadImage(
+        req.file,
+        "oralsync/uploads"
       );
 
+
     return res.json({
-      filename: req.file.filename,
       url,
     });
 
+
   } catch (error) {
+
     next(error);
+
   }
+
 };
+
+
 
 export const uploadAvatar = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+
   try {
+
     if (!req.user) {
       throw new AppError(
         "Não autenticado",
@@ -46,6 +60,7 @@ export const uploadAvatar = async (
       );
     }
 
+
     if (!req.file) {
       throw new AppError(
         "Nenhum arquivo enviado",
@@ -53,30 +68,67 @@ export const uploadAvatar = async (
       );
     }
 
-    const { id, role } = req.user;
+
+    const {
+      id,
+      role,
+    } = req.user;
+
+
 
     const avatarUrl =
-      uploadService.generatePublicUrl(
-        req.file.filename
+      await uploadService.uploadImage(
+        req.file,
+        "oralsync/avatars"
       );
 
+
+
     if (role === "dentist") {
+
       await prisma.dentist.update({
-        where: { id },
-        data: { avatar: avatarUrl },
+
+        where: {
+          id,
+        },
+
+        data: {
+          avatar: avatarUrl,
+        },
+
       });
+
+
     } else {
+
       await prisma.patient.update({
-        where: { id },
-        data: { avatar: avatarUrl },
+
+        where: {
+          id,
+        },
+
+        data: {
+          avatar: avatarUrl,
+        },
+
       });
+
     }
 
+
+
     return res.json({
+
       avatarUrl,
+
     });
 
+
+
   } catch (error) {
+
     next(error);
+
   }
+
 };

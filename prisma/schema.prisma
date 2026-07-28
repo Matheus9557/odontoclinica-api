@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum SenderType {
-  DENTIST
-  PATIENT
-}
-
 model Dentist {
   id               String           @id @default(cuid())
   name             String
@@ -65,29 +60,32 @@ model PainScaleEntry {
 model Message {
   id         String     @id @default(cuid())
   content    String
-  senderType SenderType
   createdAt  DateTime   @default(now())
   expiresAt  DateTime
-
-  dentistId String
-  patientId String
-
-  dentist Dentist @relation("DentistMessages", fields: [dentistId], references: [id])
-  patient Patient @relation("PatientMessages", fields: [patientId], references: [id])
+  dentistId  String
+  patientId  String
+  senderType SenderType
+  dentist    Dentist    @relation("DentistMessages", fields: [dentistId], references: [id])
+  patient    Patient    @relation("PatientMessages", fields: [patientId], references: [id])
 
   @@index([expiresAt])
 }
 
-enum NotificationType {
-  MESSAGE
-}
-
 model Notification {
-  id        String             @id @default(cuid())
+  id        String           @id @default(cuid())
   userId    String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
   type      NotificationType
-  read      Boolean            @default(false)
-  createdAt DateTime           @default(now())
 
   @@index([userId, read])
+}
+
+enum SenderType {
+  DENTIST
+  PATIENT
+}
+
+enum NotificationType {
+  MESSAGE
 }

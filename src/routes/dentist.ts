@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticate, onlyDentist } from '../middlewares/authMiddleware';
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 import {
   getDentistProfile,
   updateDentist,
@@ -37,7 +38,7 @@ const router = Router();
  *       404:
  *         description: Dentista não encontrado
  */
-router.get('/me', authenticate, onlyDentist, getDentistProfile);
+router.get('/me', authenticate, authorize("dentist"), getDentistProfile);
 
 
 /**
@@ -87,7 +88,7 @@ router.get('/me', authenticate, onlyDentist, getDentistProfile);
  *       404:
  *         description: Dentista não encontrado
  */
-router.put('/:id', authenticate, onlyDentist, updateDentist);
+router.put('/:id', authenticate, authorize("dentist"), updateDentist);
 
 
 /**
@@ -118,7 +119,7 @@ router.put('/:id', authenticate, onlyDentist, updateDentist);
  *       404:
  *         description: Dentista não encontrado
  */
-router.delete('/:id', authenticate, onlyDentist, deleteDentist);
+router.delete('/:id', authenticate, authorize("dentist"), deleteDentist);
 
 
 export default router;

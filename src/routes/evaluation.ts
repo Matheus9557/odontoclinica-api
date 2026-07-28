@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { authenticate, onlyDentist } from "../middlewares/authMiddleware";
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 
 import {
   createEvaluation,
@@ -50,7 +51,7 @@ const router = Router();
 router.post(
   "/:patientId",
   authenticate,
-  onlyDentist,
+authorize("dentist"),
   createEvaluation
 );
 

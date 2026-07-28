@@ -5,11 +5,8 @@ import {
   getPatientPainHistory,
 } from "../controllers/painScaleController";
 
-import {
-  authenticate,
-  onlyPatient,
-  onlyDentist,
-} from "../middlewares/authMiddleware";
+import { authenticate } from "../middlewares/authenticate";
+import { authorize } from "../middlewares/authorize";
 
 import { upload } from "../utils/multer";
 
@@ -65,7 +62,7 @@ const router = Router();
 router.post(
   "/",
   authenticate,
-  onlyPatient,
+  authorize("patient"),
   upload.single("image"),
   createDailyPainEntry
 );
@@ -96,7 +93,7 @@ router.post(
 router.get(
   "/patient/:patientId",
   authenticate,
-  onlyDentist,
+  authorize("dentist"),
   getPatientPainHistory
 );
 

@@ -6,7 +6,7 @@ import {
 
 import {
   authenticate,
-} from "../middlewares/authMiddleware";
+} from "../middlewares/authenticate";
 
 import {
   handleUpload,
@@ -57,16 +57,19 @@ router.post(
 );
 
 
+
 /**
  * @swagger
  * /upload/avatar:
  *   post:
  *     summary: Upload de avatar
+ *     description: Atualiza a foto de perfil do usuário autenticado.
  *     tags:
  *       - Upload
  *     security:
  *       - bearerAuth: []
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
