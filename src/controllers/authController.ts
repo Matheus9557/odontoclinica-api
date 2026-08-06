@@ -2,110 +2,92 @@ import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/authService";
 import { AppError } from "../errors/AppError";
 
-const authService = new AuthService();
+export class AuthController {
+  constructor(
+    private readonly authService: AuthService
+  ) {}
 
-/* ---------------------- SIGNUP DENTISTA ---------------------- */
+  signupDentist = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const result =
+        await this.authService.signupDentist(req.body);
 
-export const signupDentist = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const result = await authService.signupDentist(req.body);
+      return res.status(201).json(result);
 
-    return res.status(201).json(result);
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-
-/* ---------------------- SIGNUP PACIENTE ---------------------- */
-
-export const signupPatient = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-
-    const result =
-      await authService.signupPatient(req.body);
-
-    return res.status(201).json(result);
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-
-/* ---------------------- LOGIN ---------------------- */
-
-export const login = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-
-  try {
-
-    const {
-      email,
-      password,
-      role,
-    } = req.body;
-
-    const result =
-      await authService.login(
-        email,
-        password,
-        role
-      );
-
-    return res.status(200).json(result);
-
-  } catch (error) {
-    next(error);
-  }
-
-};
-
-
-/* ---------------------- USUÁRIO LOGADO ---------------------- */
-
-export const me = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-
-  try {
-
-    if (!req.user) {
-      throw new AppError(
-        "Não autenticado",
-        401
-      );
+    } catch (error) {
+      next(error);
     }
+  };
 
-    const {
-      id,
-      role,
-    } = req.user;
+  signupPatient = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const result =
+        await this.authService.signupPatient(req.body);
 
-    const result =
-      await authService.me(
-        id,
-        role
-      );
+      return res.status(201).json(result);
 
-    return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
-  } catch (error) {
-    next(error);
-  }
+  login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const {
+            email,
+            password,
+            role
+            } = req.body;
 
-};
+      const result =
+        await this.authService.login(
+          email,
+          password,
+          role
+        );
+
+      return res.json(result);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  me = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      if (!req.user) {
+        throw new AppError(
+          "Não autenticado",
+          401
+        );
+      }
+
+      const result =
+        await this.authService.me(
+          req.user.id,
+          req.user.role
+        );
+
+      return res.json(result);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+}

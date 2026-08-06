@@ -37,14 +37,14 @@ async function startServer() {
     );
 
 
-    const PORT = env.PORT;
+    
 
 
-    server.listen(PORT, () => {
+    server.listen(env.PORT, () => {
 
       logger.info(
         {
-          port: PORT,
+          port: env.PORT,
           environment: env.NODE_ENV,
         },
         "Servidor iniciado"

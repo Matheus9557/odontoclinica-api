@@ -1,3 +1,5 @@
+const CRO_REGEX = /^[0-9]{6,7}-[A-Z]{2}$/;
+
 export function isValidCro(cro: string): boolean {
-  return /^[0-9]{6,7}-[A-Z]{2}$/.test(cro);
+  return CRO_REGEX.test(cro.trim());
 }

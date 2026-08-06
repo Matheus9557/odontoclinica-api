@@ -1,21 +1,12 @@
 import { Router } from "express";
 
-import {
-  upload,
-} from "../utils/multer";
+import { upload } from "../utils/multer";
 
-import {
-  authenticate,
-} from "../middlewares/authenticate";
+import { authenticate } from "../middlewares/authenticate";
 
-import {
-  handleUpload,
-  uploadAvatar,
-} from "../controllers/uploadController";
-
+import { uploadController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -23,7 +14,6 @@ const router = Router();
  *   name: Upload
  *   description: Upload de arquivos e imagens
  */
-
 
 /**
  * @swagger
@@ -53,10 +43,8 @@ router.post(
   "/",
   authenticate,
   upload.single("file"),
-  handleUpload
+  uploadController.handleUpload,
 );
-
-
 
 /**
  * @swagger
@@ -86,8 +74,7 @@ router.post(
   "/avatar",
   authenticate,
   upload.single("avatar"),
-  uploadAvatar
+  uploadController.uploadAvatar,
 );
-
 
 export default router;

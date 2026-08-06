@@ -3,132 +3,84 @@ import { prisma } from "../lib/prisma";
 import { UploadService } from "../services/uploadService";
 import { AppError } from "../errors/AppError";
 
+export class UploadController {
+  constructor(
+    private readonly uploadService: UploadService
+  ) {}
 
-const uploadService = new UploadService();
+  handleUpload = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      if (!req.file) {
+        throw new AppError("Nenhum arquivo enviado", 400);
+      }
 
-
-export const handleUpload = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-
-  try {
-
-    if (!req.file) {
-      throw new AppError(
-        "Nenhum arquivo enviado",
-        400
-      );
-    }
-
-
-    const url =
-      await uploadService.uploadImage(
+      const url = await this.uploadService.uploadImage(
         req.file,
         "oralsync/uploads"
       );
 
+      return res.json({ url });
 
-    return res.json({
-      url,
-    });
-
-
-  } catch (error) {
-
-    next(error);
-
-  }
-
-};
-
-
-
-export const uploadAvatar = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-
-  try {
-
-    if (!req.user) {
-      throw new AppError(
-        "Não autenticado",
-        401
-      );
+    } catch (error) {
+      next(error);
     }
+  };
 
+  uploadAvatar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
 
-    if (!req.file) {
-      throw new AppError(
-        "Nenhum arquivo enviado",
-        400
-      );
-    }
+      if (!req.user) {
+        throw new AppError("Não autenticado", 401);
+      }
 
+      if (!req.file) {
+        throw new AppError("Nenhum arquivo enviado", 400);
+      }
 
-    const {
-      id,
-      role,
-    } = req.user;
+      const avatarUrl =
+        await this.uploadService.uploadImage(
+          req.file,
+          "oralsync/avatars"
+        );
 
+      if (req.user.role === "dentist") {
 
+        await prisma.dentist.update({
+          where: {
+            id: req.user.id,
+          },
+          data: {
+            avatar: avatarUrl,
+          },
+        });
 
-    const avatarUrl =
-      await uploadService.uploadImage(
-        req.file,
-        "oralsync/avatars"
-      );
+      } else {
 
+        await prisma.patient.update({
+          where: {
+            id: req.user.id,
+          },
+          data: {
+            avatar: avatarUrl,
+          },
+        });
 
+      }
 
-    if (role === "dentist") {
-
-      await prisma.dentist.update({
-
-        where: {
-          id,
-        },
-
-        data: {
-          avatar: avatarUrl,
-        },
-
+      return res.json({
+        avatarUrl,
       });
 
-
-    } else {
-
-      await prisma.patient.update({
-
-        where: {
-          id,
-        },
-
-        data: {
-          avatar: avatarUrl,
-        },
-
-      });
-
+    } catch (error) {
+      next(error);
     }
-
-
-
-    return res.json({
-
-      avatarUrl,
-
-    });
-
-
-
-  } catch (error) {
-
-    next(error);
-
-  }
-
-};
+  };
+}

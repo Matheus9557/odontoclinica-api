@@ -1,18 +1,9 @@
 import { Router } from "express";
 
-import {
-  signupDentist,
-  signupPatient,
-  login,
-} from "../controllers/authController";
-
-import {
-  authRateLimiter,
-} from "../middlewares/rateLimiter";
-
+import { authController } from "../container";
+import { authRateLimiter } from "../middlewares/rateLimiter";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -20,7 +11,6 @@ const router = Router();
  *   name: Auth
  *   description: Autenticação e cadastro de usuários
  */
-
 
 /**
  * @swagger
@@ -62,12 +52,7 @@ const router = Router();
  *       409:
  *         description: E-mail já cadastrado
  */
-router.post(
-  "/signup/dentist",
-  authRateLimiter,
-  signupDentist
-);
-
+router.post("/signup/dentist", authRateLimiter, authController.signupDentist);
 
 /**
  * @swagger
@@ -111,12 +96,7 @@ router.post(
  *       409:
  *         description: E-mail já cadastrado
  */
-router.post(
-  "/signup/patient",
-  authRateLimiter,
-  signupPatient
-);
-
+router.post("/signup/patient", authRateLimiter, authController.signupPatient);
 
 /**
  * @swagger
@@ -155,11 +135,6 @@ router.post(
  *       401:
  *         description: Credenciais inválidas
  */
-router.post(
-  "/login",
-  authRateLimiter,
-  login
-);
-
+router.post("/login", authRateLimiter, authController.login);
 
 export default router;

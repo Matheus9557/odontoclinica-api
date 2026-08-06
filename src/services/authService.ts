@@ -8,7 +8,9 @@ import { UserRole } from "../types/auth";
 import { AppError } from "../errors/AppError";
 
 export class AuthService {
-  private repository = new AuthRepository();
+  constructor(
+    private readonly repository: AuthRepository
+  ) {}
 
   async signupDentist(data: {
     name: string;
@@ -22,20 +24,23 @@ export class AuthService {
       throw new AppError("CRO inválido.", 400);
     }
 
-    const exists = await this.repository.findDentistByEmail(email);
+    const exists =
+      await this.repository.findDentistByEmail(email);
 
     if (exists) {
       throw new AppError("E-mail já cadastrado.", 409);
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
 
-    const dentist = await this.repository.createDentist({
-      name,
-      email,
-      password: hashedPassword,
-      cro,
-    });
+    const dentist =
+      await this.repository.createDentist({
+        name,
+        email,
+        password: hashedPassword,
+        cro,
+      });
 
     return {
       message: "Dentista cadastrado com sucesso!",
@@ -121,10 +126,7 @@ export class AuthService {
     }
 
     const validPassword =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+      await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       throw new AppError("Credenciais inválidas.", 401);

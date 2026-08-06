@@ -1,18 +1,13 @@
 import { Router } from "express";
 
-import {
-  createDailyPainEntry,
-  getPatientPainHistory,
-} from "../controllers/painScaleController";
+import { painScaleController } from "../container";
 
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
 
 import { upload } from "../utils/multer";
 
-
 const router = Router();
-
 
 /**
  * @swagger
@@ -20,7 +15,6 @@ const router = Router();
  *   name: Pain Scale
  *   description: Escala diária de dor e acompanhamento clínico
  */
-
 
 /**
  * @swagger
@@ -64,9 +58,8 @@ router.post(
   authenticate,
   authorize("patient"),
   upload.single("image"),
-  createDailyPainEntry
+  painScaleController.createDailyPainEntry,
 );
-
 
 /**
  * @swagger
@@ -94,8 +87,7 @@ router.get(
   "/patient/:patientId",
   authenticate,
   authorize("dentist"),
-  getPatientPainHistory
+  painScaleController.getPatientPainHistory,
 );
-
 
 export default router;

@@ -1,17 +1,10 @@
-import { Router } from 'express';
+import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
 
-import {
-  createPatient,
-  getPatientsByDentist,
-  updatePatient,
-  deletePatient,
-  getMe
-} from '../controllers/patientController';
+import { patientController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -19,7 +12,6 @@ const router = Router();
  *   name: Patient
  *   description: Gerenciamento de pacientes e vínculo com dentistas
  */
-
 
 /**
  * @swagger
@@ -41,8 +33,7 @@ const router = Router();
  *       404:
  *         description: Paciente não encontrado
  */
-router.get('/me', authenticate, authorize("patient"), getMe);
-
+router.get("/me", authenticate, authorize("patient"), patientController.getMe);
 
 /**
  * @swagger
@@ -88,8 +79,12 @@ router.get('/me', authenticate, authorize("patient"), getMe);
  *       409:
  *         description: Paciente já cadastrado
  */
-router.post('/', authenticate, authorize("dentist"), createPatient);
-
+router.post(
+  "/",
+  authenticate,
+  authorize("dentist"),
+  patientController.createPatient,
+);
 
 /**
  * @swagger
@@ -109,8 +104,12 @@ router.post('/', authenticate, authorize("dentist"), createPatient);
  *       403:
  *         description: Usuário não possui permissão de dentista
  */
-router.get('/', authenticate, authorize("dentist"), getPatientsByDentist);
-
+router.get(
+  "/",
+  authenticate,
+  authorize("dentist"),
+  patientController.getPatientsByDentist,
+);
 
 /**
  * @swagger
@@ -156,8 +155,12 @@ router.get('/', authenticate, authorize("dentist"), getPatientsByDentist);
  *       404:
  *         description: Paciente não encontrado
  */
-router.put('/:id', authenticate, authorize("dentist"), updatePatient);
-
+router.put(
+  "/:id",
+  authenticate,
+  authorize("dentist"),
+  patientController.updatePatient,
+);
 
 /**
  * @swagger
@@ -187,7 +190,11 @@ router.put('/:id', authenticate, authorize("dentist"), updatePatient);
  *       404:
  *         description: Paciente não encontrado
  */
-router.delete('/:id', authenticate, authorize("dentist"), deletePatient);
-
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("dentist"),
+  patientController.deletePatient,
+);
 
 export default router;

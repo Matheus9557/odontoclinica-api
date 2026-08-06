@@ -10,8 +10,9 @@ import {
 export class DentistService {
 
 
-  private readonly repository =
-    new DentistRepository();
+  constructor(
+    private readonly repository: DentistRepository
+) {}
 
 
 

@@ -1,14 +1,9 @@
-import { Router } from 'express';
+import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
-import {
-  getDentistProfile,
-  updateDentist,
-  deleteDentist
-} from '../controllers/dentistController';
+import { dentistController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -16,7 +11,6 @@ const router = Router();
  *   name: Dentist
  *   description: Gerenciamento do perfil do dentista
  */
-
 
 /**
  * @swagger
@@ -38,8 +32,12 @@ const router = Router();
  *       404:
  *         description: Dentista não encontrado
  */
-router.get('/me', authenticate, authorize("dentist"), getDentistProfile);
-
+router.get(
+  "/me",
+  authenticate,
+  authorize("dentist"),
+  dentistController.getDentistProfile,
+);
 
 /**
  * @swagger
@@ -88,8 +86,12 @@ router.get('/me', authenticate, authorize("dentist"), getDentistProfile);
  *       404:
  *         description: Dentista não encontrado
  */
-router.put('/:id', authenticate, authorize("dentist"), updateDentist);
-
+router.put(
+  "/:id",
+  authenticate,
+  authorize("dentist"),
+  dentistController.updateDentist,
+);
 
 /**
  * @swagger
@@ -119,7 +121,11 @@ router.put('/:id', authenticate, authorize("dentist"), updateDentist);
  *       404:
  *         description: Dentista não encontrado
  */
-router.delete('/:id', authenticate, authorize("dentist"), deleteDentist);
-
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("dentist"),
+  dentistController.deleteDentist,
+);
 
 export default router;

@@ -1,16 +1,10 @@
 import { Router } from "express";
 
 import { authenticate } from "../middlewares/authenticate";
-import { authorize } from "../middlewares/authorize";
 
-import {
-  getUnreadCount,
-  markAllAsRead,
-} from "../controllers/notificationController";
-
+import { notificationController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -18,7 +12,6 @@ const router = Router();
  *   name: Notification
  *   description: Sistema de notificações
  */
-
 
 /**
  * @swagger
@@ -36,9 +29,8 @@ const router = Router();
 router.get(
   "/unread-count",
   authenticate,
-  getUnreadCount
+  notificationController.getUnreadCount,
 );
-
 
 /**
  * @swagger
@@ -53,11 +45,6 @@ router.get(
  *       200:
  *         description: Notificações atualizadas
  */
-router.patch(
-  "/read-all",
-  authenticate,
-  markAllAsRead
-);
-
+router.patch("/read-all", authenticate, notificationController.markAllAsRead);
 
 export default router;

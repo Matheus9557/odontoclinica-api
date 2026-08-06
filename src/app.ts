@@ -82,7 +82,7 @@ app.use(
 /* =========================================================
  * ROUTES
  * ======================================================= */
-app.use("/health",healthRoutes);
+app.use("/health", healthRoutes);
 app.use("/auth", authRoutes);
 app.use("/dentists", dentistRoutes);
 app.use("/patients", patientRoutes);

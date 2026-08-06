@@ -8,8 +8,9 @@ import {
 export class NotificationService {
 
 
-  private readonly repository =
-    new NotificationRepository();
+  constructor(
+    private readonly repository: NotificationRepository
+) {}
 
 
 

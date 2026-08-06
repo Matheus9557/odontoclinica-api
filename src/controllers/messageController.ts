@@ -1,60 +1,74 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/AppError";
 import { MessageService } from "../services/messageService";
+import { getRequestUser } from "../utils/requestUser";
 
-const messageService = new MessageService();
+export class MessageController {
+  constructor(
+    private readonly messageService: MessageService
+  ) {}
 
-export const sendMessage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { content, receiverId } = req.body;
+  sendMessage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user = getRequestUser(req);
 
-    const { id, role } = req.user!;
+      const {
+        content,
+        receiverId,
+      } = req.body;
 
-    const message = await messageService.sendMessage({
-      senderId: id,
-      role,
-      receiverId,
-      content,
-    });
+      const message =
+        await this.messageService.sendMessage({
+          senderId: user.id,
+          role: user.role,
+          receiverId,
+          content,
+        });
 
-    return res.status(201).json(message);
+      return res
+        .status(201)
+        .json(message);
 
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getMessages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id, role } = req.user!;
-
-    const { patientId } = req.query;
-
-    if (!patientId) {
-      throw new AppError(
-        "patientId obrigatório.",
-        400
-      );
+    } catch (error) {
+      next(error);
     }
+  };
 
-    const messages =
-      await messageService.getMessages({
-        userId: id,
-        role,
-        patientId: String(patientId),
-      });
 
-    return res.json(messages);
+  getMessages = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const user = getRequestUser(req);
 
-  } catch (error) {
-    next(error);
-  }
-};
+      const {
+        patientId,
+      } = req.query;
+
+      if (!patientId) {
+        throw new AppError(
+          "patientId obrigatório.",
+          400
+        );
+      }
+
+      const messages =
+        await this.messageService.getMessages({
+          userId: user.id,
+          role: user.role,
+          patientId: String(patientId),
+        });
+
+      return res.json(messages);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+}

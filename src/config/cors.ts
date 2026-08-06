@@ -2,10 +2,12 @@ import { CorsOptions } from "cors";
 import { env } from "./env";
 
 const allowedOrigins = [
-  env.FRONTEND_URL,
-  "http://localhost:3000",
-  "http://localhost:5173",
-  "http://localhost:4173",
+  ...new Set([
+    env.FRONTEND_URL,
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:4173",
+  ]),
 ];
 
 export const corsOptions: CorsOptions = {

@@ -1,16 +1,10 @@
 import { Router } from "express";
 
 import { authenticate } from "../middlewares/authenticate";
-import { authorize } from "../middlewares/authorize";
 
-import {
-  sendMessage,
-  getMessages,
-} from "../controllers/messageController";
-
+import { messageController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -18,7 +12,6 @@ const router = Router();
  *   name: Messages
  *   description: Comunicação entre paciente e dentista
  */
-
 
 /**
  * @swagger
@@ -34,12 +27,7 @@ const router = Router();
  *       200:
  *         description: Mensagem enviada
  */
-router.post(
-  "/send",
-  authenticate,
-  sendMessage
-);
-
+router.post("/send", authenticate, messageController.sendMessage);
 
 /**
  * @swagger
@@ -55,11 +43,6 @@ router.post(
  *       200:
  *         description: Mensagens encontradas
  */
-router.get(
-  "/",
-  authenticate,
-  getMessages
-);
-
+router.get("/", authenticate, messageController.getMessages);
 
 export default router;

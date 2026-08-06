@@ -1,3 +1,4 @@
+import "./mocks/cloudinary.mock";
 import dotenv from "dotenv";
 
 dotenv.config({

@@ -5,6 +5,7 @@ import { prisma } from "../../src/lib/prisma";
 
 import { cleanDatabase } from "../helpers/database";
 import { createDentistAndLogin } from "../helpers/auth";
+import { createTestFile } from "../helpers/file";
 
 
 beforeEach(async () => {
@@ -119,6 +120,7 @@ describe("Pain Scale Integration Tests", () => {
     } = await createEvaluation();
 
 
+const file = createTestFile();
 
     const response =
       await request(app)
@@ -141,11 +143,8 @@ describe("Pain Scale Integration Tests", () => {
         )
         .attach(
           "image",
-          Buffer.from(
-            "fake image"
-          ),
-          "boca.png"
-        );
+            file
+              );
 
 
 
@@ -192,6 +191,7 @@ describe("Pain Scale Integration Tests", () => {
     } = await createPatient();
 
 
+const file = createTestFile();
 
     const response =
       await request(app)
@@ -210,11 +210,8 @@ describe("Pain Scale Integration Tests", () => {
         )
         .attach(
           "image",
-          Buffer.from(
-            "fake image"
-          ),
-          "boca.png"
-        );
+            file
+            )
 
 
 
@@ -231,6 +228,8 @@ describe("Pain Scale Integration Tests", () => {
 
   it("GET /pain-scale/patient/:patientId should return patient history", async()=>{
 
+
+    const file = createTestFile();
 
     const {
       patientToken,
@@ -268,12 +267,9 @@ describe("Pain Scale Integration Tests", () => {
         evaluation.id
       )
       .attach(
-        "image",
-        Buffer.from(
-          "fake image"
-        ),
-        "imagem.png"
-      );
+      "image",
+      file
+    );
 
 
 
@@ -377,7 +373,7 @@ it("POST /pain-scale should reject second daily entry", async()=>{
     await createEvaluation();
 
 
-
+  const secondFile = createTestFile();
   await request(app)
     .post("/pain-scale")
     .set(
@@ -398,14 +394,11 @@ it("POST /pain-scale should reject second daily entry", async()=>{
     )
     .attach(
       "image",
-      Buffer.from(
-        "fake image"
-      ),
-      "boca.png"
+      secondFile
     );
 
 
-
+  const file = createTestFile();
   const response =
     await request(app)
       .post("/pain-scale")
@@ -426,12 +419,9 @@ it("POST /pain-scale should reject second daily entry", async()=>{
         evaluation.id
       )
       .attach(
-        "image",
-        Buffer.from(
-          "fake image"
-        ),
-        "boca2.png"
-      );
+      "image",
+      file
+    );
 
 
 

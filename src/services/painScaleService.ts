@@ -1,12 +1,13 @@
 import { PainScaleRepository } from "../repositories/painScaleRepository";
 import { AppError } from "../errors/AppError";
+import { UploadService } from "./uploadService";
 
 export class PainScaleService {
 
-
-  private readonly repository =
-    new PainScaleRepository();
-
+  constructor(
+    private readonly repository: PainScaleRepository,
+    private readonly uploadService: UploadService
+  ) {}
 
 
 
@@ -18,7 +19,7 @@ export class PainScaleService {
 
     comments?: string;
 
-    imageUrl: string;
+    file: Express.Multer.File;
 
     evaluationId: string;
 
@@ -33,7 +34,7 @@ export class PainScaleService {
 
       comments,
 
-      imageUrl,
+      file,
 
       evaluationId,
 
@@ -60,8 +61,8 @@ export class PainScaleService {
 
       throw new AppError(
         "Escala deve ser um número inteiro entre 1 e 10.",
-          400
-            );
+        400
+      );
 
     }
 
@@ -79,11 +80,10 @@ export class PainScaleService {
 
       throw new AppError(
         "Paciente não encontrado.",
-          404
-            );
+        404
+      );
 
     }
-
 
 
 
@@ -95,11 +95,8 @@ export class PainScaleService {
 
     const evaluation =
       await this.repository.findEvaluation(
-
         evaluationId,
-
         patientId
-
       );
 
 
@@ -108,8 +105,8 @@ export class PainScaleService {
 
       throw new AppError(
         "Avaliação não encontrada para este paciente.",
-          404
-            );
+        404
+      );
 
     }
 
@@ -137,8 +134,8 @@ export class PainScaleService {
 
       throw new AppError(
         "A avaliação não está ativa.",
-          400
-            );
+        400
+      );
 
     }
 
@@ -155,12 +152,9 @@ export class PainScaleService {
      * por dia
      */
 
-
     const existingEntry =
       await this.repository.findTodayEntry(
-
         patientId
-
       );
 
 
@@ -169,10 +163,19 @@ export class PainScaleService {
 
       throw new AppError(
         "Paciente já enviou o relato diário.",
-          409
-            );
+        409
+      );
 
     }
+
+
+
+
+    const imageUrl =
+      await this.uploadService.uploadImage(
+        file,
+        "oralsync/pain-scale"
+      );
 
 
 
@@ -194,7 +197,6 @@ export class PainScaleService {
       evaluationId,
 
     });
-
 
   }
 
@@ -228,9 +230,7 @@ export class PainScaleService {
 
     const patient =
       await this.repository.findPatient(
-
         patientId
-
       );
 
 
@@ -240,10 +240,11 @@ export class PainScaleService {
 
       throw new AppError(
         "Paciente não encontrado.",
-          404
-            );
+        404
+      );
 
     }
+
 
 
 
@@ -255,7 +256,6 @@ export class PainScaleService {
      * seus próprios pacientes
      */
 
-
     if (
 
       patient.dentistId !== dentistId
@@ -264,23 +264,21 @@ export class PainScaleService {
 
       throw new AppError(
         "Acesso negado.",
-          403
-            );
+        403
+      );
 
     }
 
 
 
 
+
     return this.repository.findHistory(
-
       patientId
-
     );
 
 
   }
-
 
 
 }

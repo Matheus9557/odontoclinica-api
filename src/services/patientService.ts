@@ -6,7 +6,9 @@ import { PatientRepository } from "../repositories/patientRepository";
 import { AppError } from "../errors/AppError";
 
 export class PatientService {
-  private readonly repository = new PatientRepository();
+  constructor(
+    private readonly repository: PatientRepository
+) {}
 
   async createPatient(data: {
     dentistId: string;

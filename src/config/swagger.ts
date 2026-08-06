@@ -1,4 +1,5 @@
 import swaggerJsdoc from "swagger-jsdoc";
+import { env } from "./env";
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -20,12 +21,11 @@ const options: swaggerJsdoc.Options = {
 
     servers: [
       {
-        url: "https://odontoclinica-api.onrender.com",
-        description: "Produção",
-      },
-      {
-        url: "http://localhost:3000",
-        description: "Desenvolvimento local",
+        url: env.API_URL || "http://localhost:3000",
+        description:
+          env.NODE_ENV === "production"
+            ? "Produção"
+            : "Desenvolvimento",
       },
     ],
 
@@ -46,5 +46,4 @@ const options: swaggerJsdoc.Options = {
   ],
 };
 
-export const swaggerSpec =
-  swaggerJsdoc(options);
+export const swaggerSpec = swaggerJsdoc(options);

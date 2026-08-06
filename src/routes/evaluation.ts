@@ -2,13 +2,9 @@ import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
 
-import {
-  createEvaluation,
-  getEvaluationsByPatient,
-} from "../controllers/evaluationController";
+import { evaluationController } from "../container";
 
 const router = Router();
-
 
 /**
  * @swagger
@@ -16,7 +12,6 @@ const router = Router();
  *   name: Evaluation
  *   description: Avaliações e acompanhamento odontológico
  */
-
 
 /**
  * @swagger
@@ -51,10 +46,9 @@ const router = Router();
 router.post(
   "/:patientId",
   authenticate,
-authorize("dentist"),
-  createEvaluation
+  authorize("dentist"),
+  evaluationController.createEvaluation,
 );
-
 
 /**
  * @swagger
@@ -82,8 +76,7 @@ authorize("dentist"),
 router.get(
   "/patient/:patientId",
   authenticate,
-  getEvaluationsByPatient
+  evaluationController.getEvaluationsByPatient,
 );
-
 
 export default router;

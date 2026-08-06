@@ -2,7 +2,9 @@ import { EvaluationRepository } from "../repositories/evaluationRepository";
 import { AppError } from "../errors/AppError";
 
 export class EvaluationService {
-  private readonly repository = new EvaluationRepository();
+  constructor(
+    private readonly repository: EvaluationRepository
+) {}
 
   async createEvaluation(data: {
     dentistId: string;

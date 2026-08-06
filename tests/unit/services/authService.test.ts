@@ -23,13 +23,12 @@ jest.mock("../../../src/validators/croValidator", () => ({
 
 describe("AuthService", () => {
   let authService: AuthService;
-  let repository: jest.Mocked<AuthRepository>;
+  let repository: AuthRepository;
 
   beforeEach(() => {
-    authService = new AuthService();
+    repository = new AuthRepository();
 
-    repository = (authService as any)
-      .repository as jest.Mocked<AuthRepository>;
+    authService = new AuthService(repository);
 
     jest.spyOn(repository, "findDentistByEmail");
     jest.spyOn(repository, "findPatientByEmail");
@@ -46,11 +45,11 @@ describe("AuthService", () => {
     it("should create a dentist successfully", async () => {
       (isValidCro as jest.Mock).mockReturnValue(true);
 
-      repository.findDentistByEmail.mockResolvedValue(null);
+      (repository.findDentistByEmail as jest.Mock).mockResolvedValue(null);
 
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-      repository.createDentist.mockResolvedValue({
+      (repository.createDentist as jest.Mock).mockResolvedValue({
         ...dentistMock,
         password: hashedPassword,
       });
@@ -72,7 +71,7 @@ describe("AuthService", () => {
     it("should throw if email already exists", async () => {
       (isValidCro as jest.Mock).mockReturnValue(true);
 
-      repository.findDentistByEmail.mockResolvedValue({
+      (repository.findDentistByEmail as jest.Mock).mockResolvedValue({
         ...dentistMock,
         password: hashedPassword,
       });
@@ -85,13 +84,13 @@ describe("AuthService", () => {
 
   describe("signupPatient", () => {
     it("should create a patient successfully", async () => {
-      repository.findPatientByEmail.mockResolvedValue(null);
+      (repository.findPatientByEmail as jest.Mock).mockResolvedValue(null);
 
-      repository.dentistExists.mockResolvedValue(dentistMock);
+      (repository.dentistExists as jest.Mock).mockResolvedValue(dentistMock);
 
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-      repository.createPatient.mockResolvedValue({
+      (repository.createPatient as jest.Mock).mockResolvedValue({
         ...patientMock,
         password: hashedPassword,
       });
@@ -103,9 +102,9 @@ describe("AuthService", () => {
     });
 
     it("should throw if dentist does not exist", async () => {
-      repository.findPatientByEmail.mockResolvedValue(null);
+      (repository.findPatientByEmail as jest.Mock).mockResolvedValue(null);
 
-      repository.dentistExists.mockResolvedValue(null);
+      (repository.dentistExists as jest.Mock).mockResolvedValue(null);
 
       await expect(
         authService.signupPatient(signupPatientDTO)
@@ -113,7 +112,7 @@ describe("AuthService", () => {
     });
 
     it("should throw if patient email already exists", async () => {
-      repository.findPatientByEmail.mockResolvedValue({
+      (repository.findPatientByEmail as jest.Mock).mockResolvedValue({
         ...patientMock,
         password: hashedPassword,
       });
@@ -126,7 +125,7 @@ describe("AuthService", () => {
 
   describe("login", () => {
     it("should login successfully", async () => {
-      repository.findDentistByEmail.mockResolvedValue({
+      (repository.findDentistByEmail as jest.Mock).mockResolvedValue({
         ...dentistMock,
         password: hashedPassword,
       });
@@ -146,7 +145,7 @@ describe("AuthService", () => {
     });
 
     it("should throw if password is incorrect", async () => {
-      repository.findDentistByEmail.mockResolvedValue({
+      (repository.findDentistByEmail as jest.Mock).mockResolvedValue({
         ...dentistMock,
         password: hashedPassword,
       });
@@ -163,7 +162,7 @@ describe("AuthService", () => {
     });
 
     it("should throw if user does not exist", async () => {
-      repository.findDentistByEmail.mockResolvedValue(null);
+      (repository.findDentistByEmail as jest.Mock).mockResolvedValue(null);
 
       await expect(
         authService.login(
@@ -177,7 +176,7 @@ describe("AuthService", () => {
 
   describe("me", () => {
     it("should return dentist profile", async () => {
-      repository.findDentistById.mockResolvedValue(dentistMock);
+      (repository.findDentistById as jest.Mock).mockResolvedValue(dentistMock);
 
       const result = await authService.me(
         dentistMock.id,
@@ -189,7 +188,7 @@ describe("AuthService", () => {
     });
 
     it("should throw if user is not found", async () => {
-      repository.findDentistById.mockResolvedValue(null);
+      (repository.findDentistById as jest.Mock).mockResolvedValue(null);
 
       await expect(
         authService.me(

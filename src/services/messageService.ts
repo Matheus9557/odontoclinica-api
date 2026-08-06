@@ -18,8 +18,9 @@ import {
 export class MessageService {
 
 
-  private readonly repository =
-    new MessageRepository();
+  constructor(
+    private readonly repository: MessageRepository
+) {}
 
 
 

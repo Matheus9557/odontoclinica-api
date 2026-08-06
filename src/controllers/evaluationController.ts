@@ -1,39 +1,53 @@
 import { Request, Response, NextFunction } from "express";
 import { EvaluationService } from "../services/evaluationService";
+import { getRequestUser } from "../utils/requestUser";
 
-const evaluationService = new EvaluationService();
+export class EvaluationController {
 
-export const createEvaluation = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const evaluation = await evaluationService.createEvaluation({
-      dentistId: req.user!.id,
-      patientId: req.params.patientId,
-    });
+  constructor(
+    private readonly evaluationService: EvaluationService
+  ) {}
 
-    return res.status(201).json(evaluation);
-  } catch (error) {
-    next(error);
-  }
-};
+  createEvaluation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
 
-export const getEvaluationsByPatient = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const evaluations =
-      await evaluationService.getEvaluationsByPatient({
-        dentistId: req.user!.id,
-        patientId: req.params.patientId,
-      });
+      const evaluation =
+        await this.evaluationService.createEvaluation({
+          dentistId: getRequestUser(req).id,
+          patientId: req.params.patientId,
+        });
 
-    return res.json(evaluations);
-  } catch (error) {
-    next(error);
-  }
-};
+      return res
+        .status(201)
+        .json(evaluation);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+  getEvaluationsByPatient = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+
+      const evaluations =
+        await this.evaluationService.getEvaluationsByPatient({
+          dentistId: getRequestUser(req).id,
+          patientId: req.params.patientId,
+        });
+
+      return res.json(evaluations);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+}

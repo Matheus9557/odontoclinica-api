@@ -1,47 +1,25 @@
-import { cloudinary } from "../config/cloudinary";
-import { UploadApiResponse } from "cloudinary";
-
+import { IStorageProvider } from "../providers/storage/IStorageProvider";
+import { CloudinaryStorage } from "../providers/storage/CloudinaryStorage";
 
 export class UploadService {
 
+  constructor(
+
+    private readonly storage: IStorageProvider =
+      new CloudinaryStorage()
+
+  ) {}
 
   async uploadImage(
     file: Express.Multer.File,
     folder: string
-  ): Promise<string> {
+  ) {
 
+    return this.storage.upload(
+      file,
+      folder
+    );
 
-    const result =
-      await new Promise<UploadApiResponse>(
-        (resolve, reject) => {
-
-
-          const stream =
-            cloudinary.uploader.upload_stream(
-              {
-                folder,
-              },
-
-              (error, result) => {
-
-                if(error){
-                  reject(error);
-                  return;
-                }
-
-
-                resolve(result!);
-              }
-            );
-
-
-          stream.end(file.buffer);
-
-        }
-      );
-
-
-    return result.secure_url;
   }
 
 }

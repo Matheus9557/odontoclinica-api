@@ -1,50 +1,29 @@
 import multer from "multer";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-const storage = multer.memoryStorage();
-
-
-const allowedTypes = [
+const allowedMimeTypes = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
-];
-
+]);
 
 export const upload = multer({
-
-  storage,
+  storage: multer.memoryStorage(),
 
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: MAX_FILE_SIZE,
   },
 
-
-  fileFilter: (
-    _req,
-    file,
-    cb
-  ) => {
-
-
-    if (
-      allowedTypes.includes(
-        file.mimetype
-      )
-    ) {
-
-      cb(null, true);
-
-    } else {
-
-      cb(
-        new Error(
-          "Formato de imagem não permitido. Use JPG, PNG ou WEBP."
-        )
-      );
-
+  fileFilter: (_req, file, cb) => {
+    if (allowedMimeTypes.has(file.mimetype)) {
+      return cb(null, true);
     }
 
+    return cb(
+      new Error(
+        "Formato de imagem não permitido. Use JPG, PNG ou WEBP."
+      )
+    );
   },
-
 });
