@@ -45,7 +45,7 @@ export class MessageController {
       emitNotification(
         result.notifyTargetId,
         {
-          type: "message",
+          type: "MESSAGE",
           message: result.message,
         }
       );

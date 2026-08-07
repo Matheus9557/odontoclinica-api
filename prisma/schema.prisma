@@ -12,7 +12,7 @@ model Dentist {
   name             String
   email            String           @unique
   password         String
-  cro              String?
+  cro              String?          @unique
   avatar           String?
   messages         Message[]        @relation("DentistMessages")
   painScaleEntries PainScaleEntry[]
@@ -68,7 +68,12 @@ model Message {
   dentist    Dentist    @relation("DentistMessages", fields: [dentistId], references: [id])
   patient    Patient    @relation("PatientMessages", fields: [patientId], references: [id])
 
+  @@index([dentistId, patientId])
+
+  @@index([createdAt])
+
   @@index([expiresAt])
+
 }
 
 model Notification {
@@ -79,6 +84,8 @@ model Notification {
   type      NotificationType
 
   @@index([userId, read])
+
+  @@index([createdAt])
 }
 
 enum SenderType {
