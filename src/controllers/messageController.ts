@@ -1,7 +1,15 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+
 import { AppError } from "../errors/AppError";
+
 import { MessageService } from "../services/messageService";
+
 import { getRequestUser } from "../utils/requestUser";
+
+import {
+  emitConversationMessage,
+  emitNotification,
+} from "../socket";
 
 export class MessageController {
   constructor(
@@ -21,7 +29,7 @@ export class MessageController {
         receiverId,
       } = req.body;
 
-      const message =
+      const result =
         await this.messageService.sendMessage({
           senderId: user.id,
           role: user.role,
@@ -29,15 +37,27 @@ export class MessageController {
           content,
         });
 
+      emitConversationMessage(
+        result.conversationId,
+        result.message
+      );
+
+      emitNotification(
+        result.notifyTargetId,
+        {
+          type: "message",
+          message: result.message,
+        }
+      );
+
       return res
         .status(201)
-        .json(message);
+        .json(result.message);
 
     } catch (error) {
       next(error);
     }
   };
-
 
   getMessages = async (
     req: Request,
@@ -47,9 +67,7 @@ export class MessageController {
     try {
       const user = getRequestUser(req);
 
-      const {
-        patientId,
-      } = req.query;
+      const { patientId } = req.query;
 
       if (!patientId) {
         throw new AppError(

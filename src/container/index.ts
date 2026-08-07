@@ -98,7 +98,8 @@ export const evaluationService = new EvaluationService(
 );
 
 export const messageService = new MessageService(
-  messageRepository
+  messageRepository,
+  notificationRepository
 );
 
 export const notificationService = new NotificationService(

@@ -1,73 +1,140 @@
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { logger } from "./lib/logger";
+
 import { env } from "./config/env";
+import { verifyToken, JwtPayload } from "./config/jwt";
+import { logger } from "./lib/logger";
 
 let io: Server | null = null;
 
+interface AuthenticatedSocket extends Socket {
+  data: {
+    user: JwtPayload;
+  };
+}
+
 export function initSocket(server: http.Server): Server {
   io = new Server(server, {
+    cors: {
+      origin: env.FRONTEND_URL,
+      credentials: true,
+    },
 
-  cors: {
-    origin: env.FRONTEND_URL,
-    credentials: true,
-  },
+    transports: [
+      "websocket",
+      "polling",
+    ],
+  });
 
-  transports: [
-    "websocket",
-    "polling",
-  ],
+  io.use((socket, next) => {
+    try {
+      const token =
+        socket.handshake.auth?.token ??
+        socket.handshake.headers.authorization?.replace("Bearer ", "");
 
-});
+      if (!token) {
+        return next(new Error("Token não informado."));
+      }
 
-  io.on("connection", (socket: Socket) => {
+      const user = verifyToken(token);
+
+      (socket as AuthenticatedSocket).data.user = user;
+
+      next();
+    } catch {
+      next(new Error("Token inválido."));
+    }
+  });
+
+  io.on("connection", (socket) => {
+    const authSocket = socket as AuthenticatedSocket;
+
+    const user = authSocket.data.user;
+
+    authSocket.join(user.id);
+
     logger.info(
-  { socketId: socket.id },
-  "Cliente conectado ao Socket.IO"
-);
+      {
+        socketId: socket.id,
+        userId: user.id,
+        role: user.role,
+      },
+      "Cliente conectado ao Socket.IO"
+    );
 
-    // Registra o usuário na sua sala privada
-    socket.on("register_user", (userId: string) => {
-      if (!userId) return;
-      socket.join(userId);
-      logger.info(
-  {
-    socketId: socket.id,
-    userId,
-  },
-  "Usuário registrado para notificações"
-);
-    });
+    authSocket.on(
+      "conversation:join",
+      (conversationId: string) => {
+        authSocket.join(conversationId);
 
-    socket.on("disconnect", () => {
+        logger.info(
+          {
+            socketId: socket.id,
+            conversationId,
+          },
+          "Usuário entrou em uma conversa"
+        );
+      }
+    );
+
+    authSocket.on(
+      "conversation:leave",
+      (conversationId: string) => {
+        authSocket.leave(conversationId);
+
+        logger.info(
+          {
+            socketId: socket.id,
+            conversationId,
+          },
+          "Usuário saiu da conversa"
+        );
+      }
+    );
+
+    authSocket.on("disconnect", () => {
       logger.info(
-  { socketId: socket.id },
-  "Cliente desconectado do Socket.IO"
-);
+        {
+          socketId: socket.id,
+          userId: user.id,
+        },
+        "Cliente desconectado"
+      );
     });
   });
 
   return io;
 }
 
-// Envia uma notificação para um usuário específico
-export function notifyUser(
+export function emitNotification(
   userId: string,
-  payload: Record<string, unknown>
+  payload: unknown
 ): void {
-  if (!io) {
-    logger.warn(
-  "Tentativa de envio de notificação antes da inicialização do Socket.IO"
-);
-    return;
-  }
+  if (!io) return;
 
-  io.to(userId).emit("notification:new_message", payload);
+  io.to(userId).emit(
+    "notification:new",
+    payload
+  );
+}
+
+export function emitConversationMessage(
+  conversationId: string,
+  payload: unknown
+): void {
+  if (!io) return;
+
+  io.to(conversationId).emit(
+    "message:new",
+    payload
+  );
 }
 
 export function getIO(): Server {
   if (!io) {
-    throw new Error("Socket.IO ainda não foi inicializado.");
+    throw new Error(
+      "Socket.IO ainda não foi inicializado."
+    );
   }
 
   return io;

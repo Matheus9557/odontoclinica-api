@@ -32,6 +32,27 @@ router.get(
   notificationController.getUnreadCount,
 );
 
+
+/**
+ * @swagger
+ * /notifications:
+ *   get:
+ *     summary: Listar notificações do usuário autenticado
+ *     tags:
+ *       - Notification
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Notificações retornadas
+ */
+router.get(
+  "/",
+  authenticate,
+  notificationController.getNotifications,
+);
+
+
 /**
  * @swagger
  * /notifications/read-all:
@@ -45,6 +66,10 @@ router.get(
  *       200:
  *         description: Notificações atualizadas
  */
-router.patch("/read-all", authenticate, notificationController.markAllAsRead);
+router.patch(
+  "/read-all",
+  authenticate,
+  notificationController.markAllAsRead,
+);
 
 export default router;

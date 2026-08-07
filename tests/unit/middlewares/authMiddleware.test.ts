@@ -32,7 +32,7 @@ describe("authenticate middleware", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: "Token não fornecido",
+      error: "Token não fornecido.",
     });
 
     expect(next).not.toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe("authenticate middleware", () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      error: "Token inválido",
+      error: "Token inválido.",
     });
 
     expect(next).not.toHaveBeenCalled();

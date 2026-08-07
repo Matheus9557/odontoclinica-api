@@ -1,42 +1,21 @@
+import { SenderType } from "@prisma/client";
+
 import { AppError } from "../errors/AppError";
-
-import {
-  SenderType,
-} from "@prisma/client";
-
-import {
-  MessageRepository,
-} from "../repositories/messageRepository";
-
-
-import {
-  notifyUser,
-} from "../socket";
-
-
+import { MessageRepository } from "../repositories/messageRepository";
+import { NotificationRepository } from "../repositories/notificationRepository";
 
 export class MessageService {
-
-
   constructor(
-    private readonly repository: MessageRepository
-) {}
-
-
+    private readonly repository: MessageRepository,
+    private readonly notificationRepository: NotificationRepository
+  ) {}
 
   async sendMessage(data: {
-
     senderId: string;
-
     role: "dentist" | "patient";
-
     receiverId: string;
-
     content: string;
-
   }) {
-
-
     const {
       senderId,
       role,
@@ -44,107 +23,58 @@ export class MessageService {
       content,
     } = data;
 
-
-
-    if (!content) {
-
+    if (!content.trim()) {
       throw new AppError(
         "Mensagem não pode ser vazia.",
-          400
-            );
-
+        400
+      );
     }
 
-
-
     let dentistId: string;
-
     let patientId: string;
-
     let notifyTargetId: string;
 
-
-
     if (role === "dentist") {
-
-
       const patient =
         await this.repository.findPatientById(
           receiverId
         );
 
-
-
       if (!patient) {
-
         throw new AppError(
           "Paciente não encontrado.",
-            404
-              );
-
+          404
+        );
       }
 
-
-
-      if (
-        patient.dentistId !== senderId
-      ) {
-
+      if (patient.dentistId !== senderId) {
         throw new AppError(
           "Paciente não pertence a este dentista.",
-            403
-              );
-
+          403
+        );
       }
 
-
-
       dentistId = senderId;
-
       patientId = receiverId;
-
       notifyTargetId = receiverId;
 
-
-
     } else {
-
-
-
       const patient =
         await this.repository.findPatientById(
           senderId
         );
 
-
-
       if (!patient) {
-
         throw new AppError(
           "Paciente não encontrado.",
-            404
-              );
-
+          404
+        );
       }
 
-
-
-      dentistId =
-        patient.dentistId;
-
-
-      patientId =
-        senderId;
-
-
-      notifyTargetId =
-        dentistId;
-
-
+      dentistId = patient.dentistId;
+      patientId = senderId;
+      notifyTargetId = dentistId;
     }
-
-
-
 
     const senderType =
       role === "dentist"
@@ -152,75 +82,39 @@ export class MessageService {
         : SenderType.PATIENT;
 
 
-
-
     const message =
       await this.repository.createMessage({
-
         content,
-
         senderType,
-
         dentistId,
-
         patientId,
-
       });
 
 
+    await this.notificationRepository.create({
+      userId: notifyTargetId,
+      type: "MESSAGE",
+    });
 
 
-
-    await this.repository.createNotification(
-      notifyTargetId
-    );
-
-
-
-
-    notifyUser(
+    return {
+      message,
       notifyTargetId,
-      {
-        type: "message",
-      }
-    );
-
-
-
-
-    return message;
-
-
+      conversationId: `conversation:${dentistId}:${patientId}`,
+    };
   }
 
 
-
-
-
-
   async getMessages(data: {
-
     userId: string;
-
     role: "dentist" | "patient";
-
     patientId: string;
-
   }) {
-
-
-
     const {
       userId,
       role,
       patientId,
     } = data;
-
-
-
-    let dentistId: string;
-
-
 
 
     const patient =
@@ -229,70 +123,44 @@ export class MessageService {
       );
 
 
-
     if (!patient) {
-
       throw new AppError(
-          "Paciente não encontrado.",
-            404
-              );
-
+        "Paciente não encontrado.",
+        404
+      );
     }
 
 
+    let dentistId: string;
 
 
     if (role === "dentist") {
 
-
-      if (
-        patient.dentistId !== userId
-      ) {
-
+      if (patient.dentistId !== userId) {
         throw new AppError(
           "Paciente não pertence a este dentista.",
-            403
-              );
-
+          403
+        );
       }
-
-
 
       dentistId = userId;
 
-
-
     } else {
 
-
-      if (
-        patient.id !== userId
-      ) {
-
+      if (patient.id !== userId) {
         throw new AppError(
           "Acesso negado.",
-            403
-              );
-
+          403
+        );
       }
 
-
-
-      dentistId =
-        patient.dentistId;
-
-
+      dentistId = patient.dentistId;
     }
-
 
 
     return this.repository.findMessages(
       dentistId,
       patientId
     );
-
-
   }
-
-
 }

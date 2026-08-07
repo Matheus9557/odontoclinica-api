@@ -1,1 +1,17 @@
-export const JWT_SECRET = process.env.JWT_SECRET || "oralsync-dev-secret";
+import jwt from "jsonwebtoken";
+import { env } from "./env";
+
+export interface JwtPayload {
+  id: string;
+  role: "dentist" | "patient";
+}
+
+export function signToken(payload: JwtPayload): string {
+  return jwt.sign(payload, env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+}
+
+export function verifyToken(token: string): JwtPayload {
+  return jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+}

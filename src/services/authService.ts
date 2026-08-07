@@ -1,11 +1,10 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
 import { AuthRepository } from "../repositories/authRepository";
 import { isValidCro } from "../validators/croValidator";
-import { JWT_SECRET } from "../config/jwt";
 import { UserRole } from "../types/auth";
 import { AppError } from "../errors/AppError";
+import { signToken } from "../config/jwt";
 
 export class AuthService {
   constructor(
@@ -132,16 +131,10 @@ export class AuthService {
       throw new AppError("Credenciais inválidas.", 401);
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        role,
-      },
-      JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const token = signToken({
+      id: user.id,
+      role,
+    });
 
     return {
       token,

@@ -1,12 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-
-import { env } from "../config/env";
-
-interface JwtPayload {
-  id: string;
-  role: "dentist" | "patient";
-}
+import { verifyToken } from "../config/jwt";
 
 export function authenticate(
   req: Request,
@@ -15,29 +8,26 @@ export function authenticate(
 ) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({
-      error: "Token não fornecido",
+      error: "Token não fornecido.",
     });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.substring(7);
 
   try {
-    const decoded = jwt.verify(
-      token,
-      env.JWT_SECRET
-    ) as JwtPayload;
+    const payload = verifyToken(token);
 
     req.user = {
-      id: decoded.id,
-      role: decoded.role,
+      id: payload.id,
+      role: payload.role,
     };
 
-    next();
+    return next();
   } catch {
     return res.status(401).json({
-      error: "Token inválido",
+      error: "Token inválido.",
     });
   }
 }

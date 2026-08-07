@@ -53,29 +53,6 @@ export class MessageRepository {
 
 
 
-  async createNotification(
-    userId: string
-  ) {
-
-
-    return prisma.notification.create({
-
-      data: {
-
-        userId,
-
-        type: "MESSAGE",
-
-      },
-
-    });
-
-
-  }
-
-
-
-
   async findMessages(
     dentistId: string,
     patientId: string

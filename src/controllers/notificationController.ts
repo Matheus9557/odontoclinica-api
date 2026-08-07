@@ -24,6 +24,26 @@ export class NotificationController {
     }
   };
 
+
+  getNotifications = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { id } = req.user!;
+
+      const notifications =
+        await this.notificationService.getNotifications(id);
+
+      return res.json(notifications);
+
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
   markAllAsRead = async (
     req: Request,
     res: Response,
