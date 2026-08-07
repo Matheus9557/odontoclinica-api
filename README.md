@@ -39,7 +39,7 @@ Documentação Swagger/OpenAPI:
 # 🏗 Arquitetura
 
 <p align="center">
-  <img src="./docs/images/backend-architecture.png"
+  <img src="./docs/backend-architecture.png"
        alt="Arquitetura da API OralSync"
        width="1000"/>
 </p>
